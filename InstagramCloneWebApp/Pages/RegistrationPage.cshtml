@@ -1,0 +1,33 @@
+﻿@page
+@model InstagramCloneWebApp.Pages.RegistrationPageModel
+@{
+    ViewData["Title"] = "REACH ME - Registration Page";
+}
+
+<link rel="stylesheet" href="~/css/registrationPageCSS.css" />
+<div id="mainContainer">
+    <div id="regContainer">
+        <h1>Welcome to <span id="title">ReachMe!</span></h1>
+        <h2>Please fill the registration form</h2>
+        <form method="post">
+            <input type="email" placeholder="E-mail" name="email" value="@Model.newUser.email" /> <br />
+            <input type="text" placeholder="Username" name="username" value="@Model.newUser.username" /> <br />
+            <input type="password" placeholder="Password" name="password" value="@Model.newUser.password" /> <br />
+            <input type="password" placeholder="Repeat password" name="repeatpassword" value="@Model.newUser.repeatpassword" /> <br />
+            <input type="submit" value="REGISTER" />
+        </form><br />
+        <a id="mybutton" href="LoginPage">Already have account?</a>
+        @if (Model.errorMessage.Length > 0)
+        {
+            <div>
+                <strong>@Model.errorMessage</strong>
+            </div>
+        }
+        @if (Model.successMessage.Length > 0)
+        {
+            <div>
+                <strong>@Model.successMessage</strong>
+            </div>
+        }
+    </div>
+</div>

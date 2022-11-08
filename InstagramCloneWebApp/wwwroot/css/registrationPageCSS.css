@@ -1,0 +1,58 @@
+﻿body{
+    background-image:url('../Images/regPageBack.jpg');
+    background-size:cover;
+}
+#mybutton{
+    text-decoration:none;
+    color:rgb(33, 37, 41);
+}
+#mybutton:hover{
+    text-decoration: underline;
+    color: rgb(33, 37, 41);
+}
+#mainContainer {
+    height:80vh;
+    padding:0px;
+    margin:0px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+#regContainer {
+    border: solid 3px;
+    border-radius: 10px;
+    text-align: center;
+    padding: 5vw;
+    background-color: rgba(225,225,225,0.7);
+    font-family:myFont;
+}
+#title{
+    font-family:myFontBold;
+}
+input {
+    margin-bottom: 5px;
+    border-radius: 5px;
+    border: none;
+}
+[type|=submit] {
+    margin-top: 10px;
+    border-radius: 5px;
+    border: solid 1px;
+}
+[type|=submit]:hover {
+    background-color: rgba(89, 89, 89, 1);
+    color: white;
+}
+[type|=email] {
+    margin-top: 20px;
+    border-radius: 5px;
+    border: none;
+}
+@font-face{
+    font-family:myFont;
+    src:url('../Fonts/ubuntu.regular.ttf');
+}
+@font-face{
+    font-family:myFontBold;
+    src:url('../Fonts/ubuntu.bold.ttf');
+}

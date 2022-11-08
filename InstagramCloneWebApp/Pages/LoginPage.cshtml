@@ -1,0 +1,20 @@
+﻿@page
+@model InstagramCloneWebApp.Pages.LoginPageModel
+@{
+    ViewData["Title"] = "REACH ME- LogIn Page";
+}
+
+<link rel="stylesheet" href="~/css/loginPageCSS.css" />
+<div id="mainContainer">
+    <div id="regContainer">
+        <h1>Nice to see you again!</h1>
+        <h2>Fill form to log in</h2>
+        <form>
+            <input type="text" placeholder="Username" /> <br />
+            <input type="password" placeholder="Password" /> <br />
+            <input type="button" value="LOG IN" />
+        </form>
+        <a class="mybutton" href="RegistrationPage">Don't have account?</a><br />
+        <a class="mybutton" href="ForgotPasswordPage">Forgot password?</a>
+    </div>
+</div>
