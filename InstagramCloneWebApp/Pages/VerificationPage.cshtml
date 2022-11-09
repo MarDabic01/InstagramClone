@@ -1,0 +1,17 @@
+﻿@page "{passedemail}"
+@model InstagramCloneWebApp.Pages.VerificationPageModel
+@{
+    ViewData["Title"] = "Thanks for verification";
+    var passedmail = RouteData.Values["passedemail"];
+}
+
+<link rel="stylesheet" href="~/css/verificationPageCSS.css" />
+<div>
+    <h1>
+        Thanks for verification!
+    </h1>
+    <h2>
+        You can start using your account
+    </h2>
+    <button onclick="location.href = 'https://localhost:44328/LoginPage';">LOGIN</button>
+</div>

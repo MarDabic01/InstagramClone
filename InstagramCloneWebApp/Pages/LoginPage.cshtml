@@ -9,12 +9,18 @@
     <div id="regContainer">
         <h1>Nice to see you again!</h1>
         <h2>Fill form to log in</h2>
-        <form>
-            <input type="text" placeholder="Username" /> <br />
-            <input type="password" placeholder="Password" /> <br />
-            <input type="button" value="LOG IN" />
+        <form method="post">
+            <input type="text" placeholder="Username" name="username" value="@Model.existingUser.username"/> <br />
+            <input type="password" placeholder="Password" name="password" value="@Model.existingUser.password"/> <br />
+            <input type="submit" value="LOG IN" />
         </form>
         <a class="mybutton" href="RegistrationPage">Don't have account?</a><br />
         <a class="mybutton" href="ForgotPasswordPage">Forgot password?</a>
+        @if (Model.errorMessage.Length > 0)
+        {
+            <div>
+                <strong>@Model.errorMessage</strong>
+            </div>
+        }
     </div>
 </div>
