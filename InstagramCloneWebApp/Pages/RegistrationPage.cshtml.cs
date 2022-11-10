@@ -92,7 +92,7 @@ namespace InstagramCloneWebApp.Pages
                 errorMessage = e.Message;
             }
 
-            MailAddress to = new MailAddress("reachme286@gmail.com");
+            MailAddress to = new MailAddress(newUser.email);
             MailAddress from = new MailAddress("markodabic00@gmail.com");
             MailMessage message = new MailMessage(from, to);
             message.Subject = "REACH ME - Verification message";

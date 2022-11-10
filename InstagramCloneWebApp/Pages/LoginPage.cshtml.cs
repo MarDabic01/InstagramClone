@@ -35,6 +35,7 @@ namespace InstagramCloneWebApp.Pages
                                 ExistingUserInfo user = new ExistingUserInfo();
                                 user.username = reader.GetString(2);
                                 user.password = reader.GetString(3);
+                                user.isVerified = reader.GetBoolean(5);
 
                                 allUsers.Add(user);
                             }
@@ -49,17 +50,37 @@ namespace InstagramCloneWebApp.Pages
             }
 
             if(IsLoginValid())
+            {
                 errorMessage = "Successfully logged in"; //Redirect to profile page
-            else
-                errorMessage = "Invalid log in";
+            }
         }
 
         private bool IsLoginValid()
         {
             foreach (ExistingUserInfo u in allUsers)
+            {
                 if (u.username == existingUser.username && u.password == existingUser.password)
-                    return true;
+                    if (u.isVerified != true)
+                    {
+                        errorMessage = "Account is not verified";
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+            }
+            errorMessage = "Invalid log in";
             return false;
+        }
+        
+        private bool IsAccountVerified()
+        {
+            foreach (ExistingUserInfo u in allUsers)
+                if (u.username == existingUser.username && u.password == existingUser.password)
+                    if (existingUser.isVerified == true)
+                        return true;
+            return true;
         }
 
         //Class used to store user information
@@ -67,6 +88,7 @@ namespace InstagramCloneWebApp.Pages
         {
             public string username;
             public string password;
+            public bool isVerified;
         }
     }
 }

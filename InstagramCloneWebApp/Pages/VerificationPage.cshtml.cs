@@ -53,7 +53,7 @@ namespace InstagramCloneWebApp.Pages
                             connection.Open();
                             string sqlQuery = "UPDATE users " +
                                               "SET isVerified = 'TRUE' " +
-                                              "WHERE email = 'reachme286@gmail.com';";
+                                              "WHERE email = '" + data2 + "';";
                             using (SqlCommand command = new SqlCommand(sqlQuery, connection))
                             {
                                 command.Parameters.AddWithValue("@isVerified", true);
