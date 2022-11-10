@@ -1,0 +1,78 @@
+﻿body
+{
+    font-family:myFont;
+}
+a
+{
+    font-family:myFont;
+    margin-left:1vw;
+}
+span
+{
+    font-family:myFont;
+    font-size:27px;
+    margin-right:1vw;
+}
+#mainNavContainer
+{
+    padding:1vw;
+    display:flex;
+    flex-direction:row;
+    width:100%;
+    height:auto;
+    background-color:white;
+    align-items:center;
+}
+#searchbar
+{
+    margin-left:2vw;
+    border: solid 1px;
+}
+#searchbutton {
+    border: solid rgb(128, 128, 128) 3px;
+    border-radius: 20px;
+    background-color: rgba(255,255,255,0);
+    color: black;
+}
+    #searchbutton:hover {
+        border-color: rgb(26, 26, 26);
+    }
+#postbutton {
+    margin-left: 5vw;
+    margin-right: 1vw;
+    border: solid rgb(128, 128, 128) 3px;
+    border-radius: 20px;
+    background-color: rgba(255,255,255,0);
+    color: black;
+}
+    #postbutton:hover {
+        border-color: rgb(26, 26, 26);
+    }
+#logoutbutton {
+    width: 10vw;
+    height: auto;
+    border: solid rgb(255, 26, 26) 3px;
+    border-radius: 20px;
+    background-color: white;
+    color:black;
+}
+    #logoutbutton:hover {
+        border: solid rgb(153, 0, 0) 3px;
+        color:black;
+    }
+#logoutf
+{
+}
+.right
+{
+    align-self:flex-end;
+}
+@font-face {
+    font-family: myFont;
+    src: url('../Fonts/ubuntu.regular.ttf');
+}
+
+@font-face {
+    font-family: myFontBold;
+    src: url('../Fonts/ubuntu.bold.ttf');
+}

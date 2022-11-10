@@ -110,6 +110,11 @@ namespace InstagramCloneWebApp.Pages
             }
         }
 
+        public void OnPostLogOut()
+        {
+            Response.Redirect("https://localhost:44328/");
+        }
+
         private void GetAllUsers()
         {
             string data = RouteData.Values["passed_id"].ToString();
