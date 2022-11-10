@@ -1,0 +1,45 @@
+﻿@page "{passed_id}"
+@model InstagramCloneWebApp.Pages.UploadPhotoPageModel
+@{
+    ViewData["Title"] = "REACH ME - Upload Photo";
+    var passed_id = RouteData.Values["passed_id"];
+}
+
+<link rel="stylesheet" href="~/css/uploadPhotoPageCSS.css" />
+<link rel="stylesheet" href="~/css/navigationBarCSS.css" />
+<header>
+    <div id="mainNavContainer">
+        <span>ReachMe</span>
+        <a>Home</a>
+        <a>Profile</a>
+        <a>Discover</a>
+        <a>Account</a>
+        <form>
+            <input id="searchbar" type="text" placeholder="Search" />
+            <input id="searchbutton" type="submit" value="SEARCH" />
+        </form>
+        <form>
+            <input id="postbutton" type="submit" value="POST" />
+        </form>
+        <form method="post">
+            <input id="logoutbutton" type="submit" value="LOG OUT" asp-page-handler="LogOut" />
+        </form>
+    </div>
+</header>
+<div id="mainContainer">
+    <div id="accContainer">
+        <h1>Want to upload photo?</h1>
+        <h2>You can do that here</h2>
+        <form method="post" enctype="multipart/form-data">
+            <input type="file" asp-for="_empData.ImageFile"/><br />
+            <input type="text" asp-for="_empData.ImageDecsription" placeholder="Description..." /><br />
+            <input type="submit" value="POST" />
+        </form><br />
+        @if (Model.infoMessage.Length > 0)
+        {
+            <div>
+                <strong>@Model.infoMessage</strong>
+            </div>
+        }
+    </div>
+</div>

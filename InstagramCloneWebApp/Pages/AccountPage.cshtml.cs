@@ -115,6 +115,13 @@ namespace InstagramCloneWebApp.Pages
             Response.Redirect("https://localhost:44328/");
         }
 
+        public void OnpostPicture()
+        {
+            string redirectString;
+            redirectString = "https://localhost:44328/UploadPhotoPage/" + RouteData.Values["passed_id"].ToString();
+            Response.Redirect(redirectString);
+        }
+
         private void GetAllUsers()
         {
             string data = RouteData.Values["passed_id"].ToString();

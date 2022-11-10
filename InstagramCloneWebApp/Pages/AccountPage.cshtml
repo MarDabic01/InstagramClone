@@ -18,8 +18,8 @@
             <input id="searchbar" type="text" placeholder="Search" />
             <input id="searchbutton" type="submit" value="SEARCH"/>
         </form>
-        <form>
-            <input id="postbutton" type="submit" value="POST"/>
+        <form method="post">
+            <input id="postbutton" type="submit" value="POST" asp-page-handler="Picture"/>
         </form>
         <form method="post">
             <input id="logoutbutton" type="submit" value="LOG OUT" asp-page-handler="LogOut" />
