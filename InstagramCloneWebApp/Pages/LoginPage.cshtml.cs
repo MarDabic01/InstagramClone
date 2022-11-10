@@ -13,6 +13,7 @@ namespace InstagramCloneWebApp.Pages
         public List<ExistingUserInfo> allUsers = new List<ExistingUserInfo>();
         public ExistingUserInfo existingUser = new ExistingUserInfo();
         public string errorMessage = "";
+        public int index;
 
         //Code running on post call
         public void OnPost()
@@ -33,6 +34,8 @@ namespace InstagramCloneWebApp.Pages
                             while (reader.Read())
                             {
                                 ExistingUserInfo user = new ExistingUserInfo();
+                                user.id = reader.GetInt32(0);
+                                user.email = reader.GetString(1);
                                 user.username = reader.GetString(2);
                                 user.password = reader.GetString(3);
                                 user.isVerified = reader.GetBoolean(5);
@@ -52,6 +55,9 @@ namespace InstagramCloneWebApp.Pages
             if(IsLoginValid())
             {
                 errorMessage = "Successfully logged in"; //Redirect to profile page
+                string redirectString = "accountPage/" + existingUser.id + "";
+                //string redirectString = "accountPage/1";
+                Response.Redirect(redirectString);
             }
         }
 
@@ -67,6 +73,8 @@ namespace InstagramCloneWebApp.Pages
                     }
                     else
                     {
+                        existingUser.email = u.email;
+                        existingUser.id = u.id;
                         return true;
                     }
             }
@@ -86,6 +94,8 @@ namespace InstagramCloneWebApp.Pages
         //Class used to store user information
         public class ExistingUserInfo
         {
+            public int id;
+            public string email;
             public string username;
             public string password;
             public bool isVerified;

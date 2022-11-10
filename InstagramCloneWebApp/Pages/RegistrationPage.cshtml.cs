@@ -104,7 +104,7 @@ namespace InstagramCloneWebApp.Pages
             message.IsBodyHtml = true;
             SmtpClient client = new SmtpClient("smtp.gmail.com", 587)
             {
-                Credentials = new NetworkCredential("reachme286@gmail.com", "qdivulnnzawbdqei"),
+                Credentials = new NetworkCredential("reachme915@gmail.com", "hppoftaxadgsxqpi"),
                 EnableSsl = true
             };
             // code in brackets above needed if authentication required

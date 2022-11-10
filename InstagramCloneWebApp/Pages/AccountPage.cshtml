@@ -1,0 +1,35 @@
+﻿@page "{passed_id}"
+@model InstagramCloneWebApp.Pages.AccountPageModel
+@{
+    ViewData["Title"] = "REACH ME - Account";
+    var passed_id = RouteData.Values["passed_id"];
+}
+
+<link rel="stylesheet" href="~/css/accountPageCSS.css" />
+<div id="mainContainer">
+    <div id="accContainer">
+        <h1>Account</h1>
+        <h2>You can change your information</h2>
+        <form method="post" asp-page-handler="ChangeEmail">
+            <input type="email" placeholder="E-mail" name="email" />
+            <input type="submit" value="CHANGE E-MAIL" />
+        </form><br />
+        <form method="post" asp-page-handler="ChangeUsername">
+            <input type="text" placeholder="Username" name="username" />
+            <input type="submit" value="CHANGE USERNAME" />
+        </form><br />
+        <form method="post" asp-page-handler="ChangePassword">
+            <input type="password" placeholder="Password" name="password" />
+            <input type="submit" value="CHANGE PASSWORD" />
+        </form><br />
+        <form method="post" asp-page-handler="DeleteAccount">
+            <input type="submit" id="deletebutton" value="DELETE ACCOUNT" />
+        </form>
+        @if (Model.infoMessage.Length > 0)
+        {
+            <div>
+                <strong>@Model.infoMessage</strong>
+            </div>
+        }
+    </div>
+</div>
