@@ -51,7 +51,7 @@
 <div id="mainContainer">
     <div id="profileContainer">
         <h1>Profile</h1>
-        <img id="profilepic" src="~/Images/uploadPhotoBack.jpg" />
+        <img id="profilepic" src="data:image/jpg;base64,@Model.currentProfile.imagedata" />
         <span id="profileusername">@Model.currentProfile.username</span>
         <span id="profiledesc">@Model.currentProfile.description</span>
         <div id="postsfollowers">
@@ -70,9 +70,18 @@
         </div>
         @if (Model.CheckIfProfileIsMine() == false)
         {
-            <form>
-                <input type="submit" value="Follow" id="followbutton" />
-            </form>
+            @if (Model.CheckIfFollowingUser() == false)
+            {
+                <form method="post">
+                    <input type="submit" value="Follow" id="followbutton" asp-page-handler="Follow" />
+                </form>
+            }
+            else
+            {
+                <form method="post">
+                    <input type="submit" value="Unfollow" id="followbutton" asp-page-handler="Unfollow" />
+                </form>
+            }
         }
     </div>
 </div>

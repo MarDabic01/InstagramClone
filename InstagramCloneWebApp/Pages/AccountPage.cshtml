@@ -69,6 +69,10 @@
             <input type="text" placeholder="Profile bio..." name="description" />
             <input type="submit" value="ADD DESCRIPTION" />
         </form><br />
+        <form method="post" enctype="multipart/form-data" asp-page-handler="ProfilePic">
+            <input type="file" asp-for="formFile"/>
+            <input type="submit" value="SET PROFILE PICTURE" />
+        </form><br />
         <form method="post" asp-page-handler="DeleteAccount">
             <input type="submit" id="deletebutton" value="DELETE ACCOUNT" />
         </form>

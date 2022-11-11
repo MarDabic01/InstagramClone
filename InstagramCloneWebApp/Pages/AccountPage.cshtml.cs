@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -17,6 +19,12 @@ namespace InstagramCloneWebApp.Pages
         public string infoMessage = "";
         public string searchingString = "";
         public List<string> links = new List<string>();
+
+        [BindProperty]
+        public ProfilePicture profile_pic { get; set; }
+
+        [BindProperty]
+        public IFormFile formFile { get; set; }
 
         public void OnPostChangeEmail()
         {
@@ -153,6 +161,49 @@ namespace InstagramCloneWebApp.Pages
             Response.Redirect(redirectString);
         }
 
+        public void OnPostProfilePic()
+        {
+            byte[] bytes = null;
+            profile_pic.imageFile = formFile;
+            if(profile_pic.imageFile == null)
+            {
+                infoMessage = "Nije selektovana slika";
+            }
+            else
+            {
+                using (Stream fs = profile_pic.imageFile.OpenReadStream())
+                {
+                    using (BinaryReader br = new BinaryReader(fs))
+                    {
+                        bytes = br.ReadBytes((Int32)fs.Length);
+                    }
+                    profile_pic.picturedata = Convert.ToBase64String(bytes, 0, bytes.Length);
+                }
+                GetAllUsers();
+                foreach (UserInfo u in allUsers)
+                {
+                    if (u.id == (String)RouteData.Values["passed_id"])
+                    {
+                        string connectionString = "Data Source=.\\sqlexpress;Initial Catalog=ReachMeDB;Integrated Security=True";
+                        using (SqlConnection connection = new SqlConnection(connectionString))
+                        {
+                            connection.Open();
+                            string sqlQuery = "UPDATE users " +
+                                              "SET profilepic = '" + profile_pic.picturedata + "'" +
+                                              "WHERE id = " + data2 + ";";
+                            using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                            {
+                                command.Parameters.AddWithValue("@profilepic", profile_pic.picturedata);
+                                infoMessage = "Profile picture added";
+
+                                command.ExecuteNonQuery();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         public void OnPostSearch()
         {
             searchingString = Request.Form["searchbar"];
@@ -215,6 +266,7 @@ namespace InstagramCloneWebApp.Pages
                             user.username = reader.GetString(2);
                             user.password = reader.GetString(3);
                             user.repeatpassword = reader.GetString(4);
+                            user.imagedata = reader.GetString(10);
 
                             allUsers.Add(user);
                         }
@@ -297,6 +349,13 @@ namespace InstagramCloneWebApp.Pages
             public string password;
             public string repeatpassword;
             public string description;
+            public string imagedata;
+        }
+
+        public class ProfilePicture
+        {
+            public string picturedata;
+            public IFormFile imageFile;
         }
     }
 }

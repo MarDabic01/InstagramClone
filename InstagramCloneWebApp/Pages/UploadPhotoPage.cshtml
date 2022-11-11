@@ -23,7 +23,7 @@
             <input type="submit" value="Account" class="linktopage" asp-page-handler="ToAccount" />
         </form>
         <form method="post">
-            <input id="searchbar" type="text" placeholder="Search" />
+            <input id="searchbar" type="text" placeholder="Search" name="searchbar" />
             <input id="searchbutton" type="submit" value="SEARCH" asp-page-handler="Search" />
         </form>
         <form method="post">
@@ -33,6 +33,21 @@
             <input id="logoutbutton" type="submit" value="LOG OUT" asp-page-handler="LogOut" />
         </form>
     </div>
+    @if (Model.foundUsers.Count > 0)
+    {
+        @for (int i = 0; i < Model.foundUsers.Count; i++)
+        {
+            if (i == 0)
+            {
+                <div id="searchingresult">
+                    <strong>Searching results:</strong>
+                </div>
+            }
+            <div id="searchingresult">
+                <a href="@Model.links[i]">@Model.foundUsers[i].username</a>
+            </div>
+        }
+    }
 </header>
 <div id="mainContainer">
     <div id="accContainer">

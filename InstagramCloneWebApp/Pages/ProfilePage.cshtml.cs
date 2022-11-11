@@ -17,12 +17,14 @@ namespace InstagramCloneWebApp.Pages
         public string infoMessage = "";
         public int data2;
         public bool isMyProfile = false;
+        public bool isAreadyFollowing = false;
         public string searchingString = "";
         public List<string> links = new List<string>();
 
         public void OnGet()
         {
             GetAllUsers();
+            
             foreach(ProfileInfo pi in allUsers)
             {
                 if(pi.id == data2)
@@ -33,6 +35,7 @@ namespace InstagramCloneWebApp.Pages
                     currentProfile.posts = pi.posts;
                     currentProfile.followers = pi.followers;
                     currentProfile.following = pi.following;
+                    currentProfile.imagedata = pi.imagedata;
                 }
             }
         }
@@ -54,18 +57,7 @@ namespace InstagramCloneWebApp.Pages
                     }
                 }
             }
-            foreach (ProfileInfo pi in allUsers)
-            {
-                if (pi.id == data2)
-                {
-                    currentProfile.id = pi.id;
-                    currentProfile.username = pi.username;
-                    currentProfile.description = pi.description;
-                    currentProfile.posts = pi.posts;
-                    currentProfile.followers = pi.followers;
-                    currentProfile.following = pi.following;
-                }
-            }
+            UpdateProfileData(RouteData.Values["profile_id"].ToString());
         }
 
         public void OnPostToHome()
@@ -99,10 +91,261 @@ namespace InstagramCloneWebApp.Pages
             redirectString = "https://localhost:44328/UploadPhotoPage/" + RouteData.Values["my_id"].ToString();
             Response.Redirect(redirectString);
         }
+
+        public void OnPostFollow()
+        {
+            GetAllUsers();
+
+            string user1="", user2="";
+            foreach(ProfileInfo u in allUsers)
+            {
+                if (u.id.ToString() == (String)RouteData.Values["my_id"]) 
+                    user1 = u.username;
+                if (u.id.ToString() == (String)RouteData.Values["profile_id"]) 
+                    user2 = u.username;
+            }
+
+            foreach(ProfileInfo u in allUsers)
+            {
+
+                if (u.id.ToString() == (String)RouteData.Values["my_id"])
+                {
+                    int following_num = u.following + 1;
+                    string following_s = u.followings + user2 + ",";
+                    string connectionString = "Data Source=.\\sqlexpress;Initial Catalog=ReachMeDB;Integrated Security=True";
+                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        connection.Open();
+                        string sqlQuery = "UPDATE users " +
+                                          "SET following = " + following_num + ", followinglist = '" + following_s + "'" +
+                                          "WHERE id = " + u.id + ";";
+                        using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                        {
+                            command.Parameters.AddWithValue("@following", following_num);
+                            command.Parameters.AddWithValue("@followinglist", following_s);
+
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+            foreach (ProfileInfo u in allUsers)
+            {
+                if (u.id.ToString() == (String)RouteData.Values["profile_id"])
+                {
+                    int followers_num = u.followers + 1;
+                    string followers_s = u.followerss + user1 + ",";
+                    string connectionString = "Data Source=.\\sqlexpress;Initial Catalog=ReachMeDB;Integrated Security=True";
+                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        connection.Open();
+                        string sqlQuery = "UPDATE users " +
+                                          "SET followers = " + followers_num + ", followerslist = '" + followers_s + "'" +
+                                          "WHERE id = " + u.id + ";";
+                        using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                        {
+                            command.Parameters.AddWithValue("@followers", followers_num);
+                            command.Parameters.AddWithValue("@followerslist", followers_s);
+
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+            UpdateProfileData(RouteData.Values["profile_id"].ToString());
+        }
+        public void OnPostUnfollow()
+        {
+            GetAllUsers();
+            UpdateFollowersList();
+            UpdateFollowingList();
+            UpdateProfileData(RouteData.Values["profile_id"].ToString());
+        }
+        public bool CheckIfFollowingUser()
+        {
+            string user = "";
+
+            List<string> allfollowings = new List<string>();
+            string followinguser = "";
+            string followingstring = "";
+
+            foreach (ProfileInfo u in allUsers)
+            {
+                if (u.id.ToString() == (String)RouteData.Values["my_id"])
+                    followingstring = u.followings;
+                if (u.id.ToString() == (String)RouteData.Values["profile_id"])
+                    user = u.username;
+            }
+
+            for(int i=0;i<followingstring.Length;i++)
+            {
+                if(followingstring[i] == ',')
+                {
+                    allfollowings.Add(followinguser);
+                    followinguser = "";
+                }
+                else
+                {
+                    followinguser += followingstring[i];
+                }
+            }
+
+            foreach(string s in allfollowings)
+            {
+                if (s == user)
+                    return true; 
+            }
+            return false;
+        }
+        private void UpdateFollowersList()
+        {
+            List<string> allfollowers = new List<string>();
+            List<string> allfollowersafter = new List<string>();
+            string followeruser = "";
+            string followerstring = "";
+            string finished = "";
+            string user = "";
+
+            foreach (ProfileInfo u in allUsers)
+            {
+                if (u.id.ToString() == (String)RouteData.Values["profile_id"])
+                    followerstring = u.followerss;
+                if (u.id.ToString() == (String)RouteData.Values["my_id"])
+                    user = u.username;
+            }
+            for (int i = 0; i < followerstring.Length; i++)
+            {
+                if (followerstring[i] == ',')
+                {
+                    allfollowers.Add(followeruser);
+                    followeruser = "";
+                }
+                else
+                {
+                    followeruser += followerstring[i];
+                }
+            }
+            foreach (string s in allfollowers)
+            {
+                if (s != user)
+                {
+                    allfollowersafter.Add(s);
+                    allfollowersafter.Add(",");
+                }
+            }
+            foreach (string s in allfollowersafter)
+            {
+                finished += s;
+            }
+            foreach (ProfileInfo u in allUsers)
+            {
+                if (u.id.ToString() == (String)RouteData.Values["profile_id"])
+                {
+                    int followers_num = u.followers - 1;
+                    string connectionString = "Data Source=.\\sqlexpress;Initial Catalog=ReachMeDB;Integrated Security=True";
+                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        connection.Open();
+                        string sqlQuery = "UPDATE users " +
+                                          "SET followerslist = '" + finished + "', followers = " + followers_num +
+                                          "WHERE id = " + u.id + ";";
+                        using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                        {
+                            command.Parameters.AddWithValue("@followerslist", finished);
+                            command.Parameters.AddWithValue("@followers", followers_num);
+
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+        }
+        private void UpdateFollowingList()
+        {
+            List<string> allfollowings = new List<string>();
+            List<string> allfollowingsafter = new List<string>();
+            string followinguser = "";
+            string followingstring = "";
+            string finished = "";
+            string user = "";
+
+            foreach (ProfileInfo u in allUsers)
+            {
+                if (u.id.ToString() == (String)RouteData.Values["my_id"])
+                    followingstring = u.followings;
+                if (u.id.ToString() == (String)RouteData.Values["profile_id"])
+                    user = u.username;
+            }
+            for (int i = 0; i < followingstring.Length; i++)
+            {
+                if (followingstring[i] == ',')
+                {
+                    allfollowings.Add(followinguser);
+                    followinguser = "";
+                }
+                else
+                {
+                    followinguser += followingstring[i];
+                }
+            }
+            foreach (string s in allfollowings)
+            {
+                if (s != user)
+                {
+                    allfollowingsafter.Add(s);
+                    allfollowingsafter.Add(",");
+                }
+            }
+            foreach (string s in allfollowingsafter)
+            {
+                finished += s;
+            }
+            foreach (ProfileInfo u in allUsers)
+            {
+                if (u.id.ToString() == (String)RouteData.Values["my_id"])
+                {
+                    int following_num = u.following - 1;
+                    string connectionString = "Data Source=.\\sqlexpress;Initial Catalog=ReachMeDB;Integrated Security=True";
+                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        connection.Open();
+                        string sqlQuery = "UPDATE users " +
+                                          "SET followinglist = '" + finished + "', following = " + following_num +
+                                          "WHERE id = " + u.id + ";";
+                        using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                        {
+                            command.Parameters.AddWithValue("@followinglist", finished);
+                            command.Parameters.AddWithValue("@following", following_num);
+
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+        }
+        private void UpdateProfileData(string str)
+        {
+            GetAllUsers();
+            foreach (ProfileInfo pi in allUsers)
+            {
+                if (pi.id.ToString() == str)
+                {
+                    currentProfile.id = pi.id;
+                    currentProfile.username = pi.username;
+                    currentProfile.description = pi.description;
+                    currentProfile.posts = pi.posts;
+                    currentProfile.followers = pi.followers;
+                    currentProfile.following = pi.following;
+                    currentProfile.imagedata = pi.imagedata;
+                }
+            }
+        }
+
         private void GetAllUsers()
         {
             string data = RouteData.Values["profile_id"].ToString();
             data2 = int.Parse(data);
+            allUsers.Clear();
 
             string connectionString = "Data Source=.\\sqlexpress;Initial Catalog=ReachMeDB;Integrated Security=True";
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -122,6 +365,9 @@ namespace InstagramCloneWebApp.Pages
                             user.posts = reader.GetInt32(7);
                             user.followers = reader.GetInt32(8);
                             user.following = reader.GetInt32(9);
+                            user.imagedata = reader.GetString(10);
+                            user.followerss = reader.GetString(11);
+                            user.followings = reader.GetString(12);
 
                             allUsers.Add(user);
                         }
@@ -148,5 +394,8 @@ namespace InstagramCloneWebApp.Pages
         public int posts;
         public int followers;
         public int following;
+        public string imagedata;
+        public string followerss;
+        public string followings;
     }
 }

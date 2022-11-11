@@ -14,11 +14,14 @@ namespace InstagramCloneWebApp.Pages
 {
     public class UploadPhotoPageModel : PageModel
     {
+        public List<UserInfo> foundUsers = new List<UserInfo>();
         List<UserInfo> allUsers = new List<UserInfo>();
         public string infoMessage = "";
         private readonly EmpDBContext _context;
         public int data2;
         private string aut = "";
+        public string searchingString = "";
+        public List<string> links = new List<string>();
 
         [BindProperty]
         public ImageEntity _empData { get; set; }
@@ -55,8 +58,41 @@ namespace InstagramCloneWebApp.Pages
             }
             _context.ImagesDetails.Add(_empData);
             _context.SaveChanges();
+            IncrementPostsValue();
             
             //return Redirect("https://localhost:44328/UploadPhotoPage/" + RouteData.Values["passed_id"]);
+        }
+
+        private void IncrementPostsValue()
+        {
+            foreach(UserInfo u in allUsers)
+            {
+                if(u.id == (String)RouteData.Values["passed_id"])
+                {
+                    int new_posts_num = u.postsnum + 1;
+                    try
+                    {
+                        string connectionString = "Data Source=.\\sqlexpress;Initial Catalog=ReachMeDB;Integrated Security=True";
+                        using (SqlConnection connection = new SqlConnection(connectionString))
+                        {
+                            connection.Open();
+                            string sqlQuery = "UPDATE users " +
+                                              "SET posts = " + new_posts_num +
+                                              "WHERE id ='" + u.id +"'";
+                            using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                            {
+                                command.Parameters.AddWithValue("@posts", new_posts_num);
+
+                                command.ExecuteNonQuery();
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                }
+            }
         }
 
         private void FinAuthor()
@@ -84,6 +120,21 @@ namespace InstagramCloneWebApp.Pages
 
         public void OnPostSearch()
         {
+            searchingString = Request.Form["searchbar"];
+            if (searchingString.Length > 0)
+            {
+                GetAllUsers();
+                foreach (UserInfo u in allUsers)
+                {
+                    if (u.username.Contains(searchingString))
+                    {
+                        string linkString = "https://localhost:44328/ProfilePage/" + RouteData.Values["passed_id"] + "/" + u.id;
+
+                        links.Add(linkString);
+                        foundUsers.Add(u);
+                    }
+                }
+            }
         }
 
         public void OnPostToHome()
@@ -129,6 +180,7 @@ namespace InstagramCloneWebApp.Pages
                             user.username = reader.GetString(2);
                             user.password = reader.GetString(3);
                             user.repeatpassword = reader.GetString(4);
+                            user.postsnum = reader.GetInt32(7);
 
                             allUsers.Add(user);
                         }
@@ -144,5 +196,6 @@ namespace InstagramCloneWebApp.Pages
         public string username;
         public string password;
         public string repeatpassword;
+        public int postsnum;
     }
 }
