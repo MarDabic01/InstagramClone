@@ -1,11 +1,10 @@
-﻿@page "{passed_id}"
-@model InstagramCloneWebApp.Pages.AccountPageModel
+﻿@page "{my_id}/{profile_id}"
+@model InstagramCloneWebApp.Pages.ProfilePageModel
 @{
-    ViewData["Title"] = "REACH ME - Account";
-    var passed_id = RouteData.Values["passed_id"];
+    ViewData["Title"] = "REACH ME - Profile";
 }
 
-<link rel="stylesheet" href="~/css/accountPageCSS.css" />
+<link rel="stylesheet" href="~/css/profilePageCSS.css" />
 <link rel="stylesheet" href="~/css/navigationBarCSS.css" />
 <header>
     <div id="mainNavContainer">
@@ -50,33 +49,30 @@
     }
 </header>
 <div id="mainContainer">
-    <div id="accContainer">
-        <h1>Account</h1>
-        <h2>You can change your information</h2>
-        <form method="post" asp-page-handler="ChangeEmail">
-            <input type="email" placeholder="E-mail" name="email" />
-            <input type="submit" value="CHANGE E-MAIL" />
-        </form><br />
-        <form method="post" asp-page-handler="ChangeUsername">
-            <input type="text" placeholder="Username" name="username" />
-            <input type="submit" value="CHANGE USERNAME" />
-        </form><br />
-        <form method="post" asp-page-handler="ChangePassword">
-            <input type="password" placeholder="Password" name="password" />
-            <input type="submit" value="CHANGE PASSWORD" />
-        </form><br />
-        <form method="post" asp-page-handler="AddDescription">
-            <input type="text" placeholder="Profile bio..." name="description" />
-            <input type="submit" value="ADD DESCRIPTION" />
-        </form><br />
-        <form method="post" asp-page-handler="DeleteAccount">
-            <input type="submit" id="deletebutton" value="DELETE ACCOUNT" />
-        </form>
-        @if (Model.infoMessage.Length > 0)
-        {
-            <div>
-                <strong>@Model.infoMessage</strong>
+    <div id="profileContainer">
+        <h1>Profile</h1>
+        <img id="profilepic" src="~/Images/uploadPhotoBack.jpg" />
+        <span id="profileusername">@Model.currentProfile.username</span>
+        <span id="profiledesc">@Model.currentProfile.description</span>
+        <div id="postsfollowers">
+            <div id="postsfollowerstext">
+                <span class="textinfo">Posts</span>
+                <span class="textinfo">@Model.currentProfile.posts</span>
             </div>
+            <div id="postsfollowerstext">
+                <span class="textinfo">Followers</span>
+                <span class="textinfo">@Model.currentProfile.followers</span>
+            </div>
+            <div id="postsfollowerstext">
+                <span class="textinfo">Following</span>
+                <span class="textinfo">@Model.currentProfile.following</span>
+            </div>
+        </div>
+        @if (Model.CheckIfProfileIsMine() == false)
+        {
+            <form>
+                <input type="submit" value="Follow" id="followbutton" />
+            </form>
         }
     </div>
 </div>

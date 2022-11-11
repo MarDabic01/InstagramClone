@@ -70,6 +70,43 @@ namespace InstagramCloneWebApp.Pages
             }
         }
 
+        public void OnPostLogOut()
+        {
+            Response.Redirect("https://localhost:44328/");
+        }
+
+        public void OnpostPicture()
+        {
+            string redirectString;
+            redirectString = "https://localhost:44328/UploadPhotoPage/" + RouteData.Values["passed_id"].ToString();
+            Response.Redirect(redirectString);
+        }
+
+        public void OnPostSearch()
+        {
+        }
+
+        public void OnPostToHome()
+        {
+
+        }
+        public void OnPostToProfile()
+        {
+            string redirectString;
+            redirectString = "https://localhost:44328/ProfilePage/" + RouteData.Values["passed_id"].ToString() + "/" + RouteData.Values["passed_id"].ToString();
+            Response.Redirect(redirectString);
+        }
+        public void OnPostToDiscover()
+        {
+
+        }
+        public void OnPostToAccount()
+        {
+            string redirectString;
+            redirectString = "https://localhost:44328/AccountPage/" + RouteData.Values["passed_id"].ToString();
+            Response.Redirect(redirectString);
+        }
+
         private void GetAllUsers()
         {
             string data = RouteData.Values["passed_id"].ToString();

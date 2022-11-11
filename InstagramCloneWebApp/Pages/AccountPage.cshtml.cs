@@ -10,10 +10,13 @@ namespace InstagramCloneWebApp.Pages
 {
     public class AccountPageModel : PageModel
     {
-        List<UserInfo> allUsers = new List<UserInfo>();
+        public List<UserInfo> foundUsers = new List<UserInfo>();
+        public List<UserInfo> allUsers = new List<UserInfo>();
         UserInfo currentUser = new UserInfo();
         public int data2;
         public string infoMessage = "";
+        public string searchingString = "";
+        public List<string> links = new List<string>();
 
         public void OnPostChangeEmail()
         {
@@ -83,6 +86,34 @@ namespace InstagramCloneWebApp.Pages
             }
         }
 
+        public void OnPostAddDescription()
+        {
+            GetAllUsers();
+            currentUser.description = Request.Form["description"];
+
+            foreach (UserInfo u in allUsers)
+            {
+                if (u.id == (String)RouteData.Values["passed_id"])
+                {
+                    string connectionString = "Data Source=.\\sqlexpress;Initial Catalog=ReachMeDB;Integrated Security=True";
+                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        connection.Open();
+                        string sqlQuery = "UPDATE users " +
+                                          "SET profilebio = '" + currentUser.description + "'" +
+                                          "WHERE id = " + data2 + ";";
+                        using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                        {
+                            command.Parameters.AddWithValue("@description", currentUser.description);
+                            infoMessage = "Profile description added";
+
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+        }
+
         public void OnPostDeleteAccount()
         {
             GetAllUsers();
@@ -119,6 +150,46 @@ namespace InstagramCloneWebApp.Pages
         {
             string redirectString;
             redirectString = "https://localhost:44328/UploadPhotoPage/" + RouteData.Values["passed_id"].ToString();
+            Response.Redirect(redirectString);
+        }
+
+        public void OnPostSearch()
+        {
+            searchingString = Request.Form["searchbar"];
+            if(searchingString.Length > 0)
+            {
+                GetAllUsers();
+                foreach (UserInfo u in allUsers)
+                {
+                    if (u.username.Contains(searchingString))
+                    {
+                        string linkString = "https://localhost:44328/ProfilePage/" + RouteData.Values["passed_id"] + "/" + u.id;
+
+                        links.Add(linkString);
+                        foundUsers.Add(u);
+                    }
+                }
+            }
+        }
+
+        public void OnPostToHome()
+        {
+
+        }
+        public void OnPostToProfile()
+        {
+            string redirectString;
+            redirectString = "https://localhost:44328/ProfilePage/" + RouteData.Values["passed_id"].ToString() + "/" + RouteData.Values["passed_id"].ToString();
+            Response.Redirect(redirectString);
+        }
+        public void OnPostToDiscover()
+        {
+
+        }
+        public void OnPostToAccount()
+        {
+            string redirectString;
+            redirectString = "https://localhost:44328/AccountPage/" + RouteData.Values["passed_id"].ToString();
             Response.Redirect(redirectString);
         }
 
@@ -225,6 +296,7 @@ namespace InstagramCloneWebApp.Pages
             public string username;
             public string password;
             public string repeatpassword;
+            public string description;
         }
     }
 }

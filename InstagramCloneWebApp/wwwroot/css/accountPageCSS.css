@@ -1,6 +1,6 @@
 ﻿body {
     background-image:url('../Images/accountPageBack.jpg');
-    background-size:auto;
+    background-size:cover;
 }
 #mainContainer {
     height: 80vh;
