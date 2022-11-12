@@ -21,9 +21,15 @@ namespace InstagramCloneWebApp.Pages
         public string searchingString = "";
         public List<string> links = new List<string>();
 
+        //Variables for my posts
+        List<ProfilePost> allposts = new List<ProfilePost>();
+        public List<ProfilePost> myposts = new List<ProfilePost>();
+
         public void OnGet()
         {
             GetAllUsers();
+            GetMyPosts();
+            ShowMyPosts();
             
             foreach(ProfileInfo pi in allUsers)
             {
@@ -58,11 +64,25 @@ namespace InstagramCloneWebApp.Pages
                 }
             }
             UpdateProfileData(RouteData.Values["profile_id"].ToString());
+            GetMyPosts();
+            ShowMyPosts();
         }
 
         public void OnPostToHome()
         {
 
+        }
+        public void OnPostToFollowers()
+        {
+            string redirectString;
+            redirectString = "https://localhost:44328/FollowersPage/" + RouteData.Values["my_id"].ToString() + "/" + RouteData.Values["profile_id"].ToString();
+            Response.Redirect(redirectString);
+        }
+        public void OnPostToFollowing()
+        {
+            string redirectString;
+            redirectString = "https://localhost:44328/FollowingPage/" + RouteData.Values["my_id"].ToString() + "/" + RouteData.Values["profile_id"].ToString();
+            Response.Redirect(redirectString);
         }
         public void OnPostToProfile()
         {
@@ -100,9 +120,9 @@ namespace InstagramCloneWebApp.Pages
             foreach(ProfileInfo u in allUsers)
             {
                 if (u.id.ToString() == (String)RouteData.Values["my_id"]) 
-                    user1 = u.username;
+                    user1 = u.id.ToString();
                 if (u.id.ToString() == (String)RouteData.Values["profile_id"]) 
-                    user2 = u.username;
+                    user2 = u.id.ToString();
             }
 
             foreach(ProfileInfo u in allUsers)
@@ -174,7 +194,7 @@ namespace InstagramCloneWebApp.Pages
                 if (u.id.ToString() == (String)RouteData.Values["my_id"])
                     followingstring = u.followings;
                 if (u.id.ToString() == (String)RouteData.Values["profile_id"])
-                    user = u.username;
+                    user = u.id.ToString();
             }
 
             for(int i=0;i<followingstring.Length;i++)
@@ -211,7 +231,7 @@ namespace InstagramCloneWebApp.Pages
                 if (u.id.ToString() == (String)RouteData.Values["profile_id"])
                     followerstring = u.followerss;
                 if (u.id.ToString() == (String)RouteData.Values["my_id"])
-                    user = u.username;
+                    user = u.id.ToString();
             }
             for (int i = 0; i < followerstring.Length; i++)
             {
@@ -274,7 +294,7 @@ namespace InstagramCloneWebApp.Pages
                 if (u.id.ToString() == (String)RouteData.Values["my_id"])
                     followingstring = u.followings;
                 if (u.id.ToString() == (String)RouteData.Values["profile_id"])
-                    user = u.username;
+                    user = u.id.ToString();
             }
             for (int i = 0; i < followingstring.Length; i++)
             {
@@ -384,6 +404,49 @@ namespace InstagramCloneWebApp.Pages
             }
             return false;
         }
+
+        private void GetMyPosts()
+        {
+            myposts.Clear();
+
+            string connectionString = "Data Source=.\\sqlexpress;Initial Catalog=ReachMeDB;Integrated Security=True";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                string sqlQuery = "SELECT * FROM ImagesDetails";
+                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                {
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            ProfilePost post = new ProfilePost();
+                            post.id = reader.GetInt32(0).ToString();
+                            post.caption = reader.GetString(1);
+                            post.author = reader.GetString(2);
+                            post.postdata = reader.GetString(4);
+                            post.username = reader.GetString(5);
+                            post.profilepic = reader.GetString(6);
+                            post.likes = reader.GetInt32(7);
+                            post.link = "https://localhost:44328/ProfilePage/" + RouteData.Values["my_id"].ToString() + "/" + RouteData.Values["profile_id"].ToString();
+
+                            allposts.Add(post);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void ShowMyPosts()
+        {
+            foreach(ProfilePost p in allposts)
+            {
+                if(p.author == (String)RouteData.Values["profile_id"])
+                {
+                    myposts.Add(p);
+                }
+            }
+        }
     }
 
     public class ProfileInfo
@@ -397,5 +460,17 @@ namespace InstagramCloneWebApp.Pages
         public string imagedata;
         public string followerss;
         public string followings;
+    }
+
+    public class ProfilePost
+    {
+        public string id;
+        public string author;
+        public string profilepic;
+        public string postdata;
+        public string caption;
+        public string username;
+        public int likes;
+        public string link;
     }
 }

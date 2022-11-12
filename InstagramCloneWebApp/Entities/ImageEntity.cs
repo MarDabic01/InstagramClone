@@ -15,6 +15,9 @@ namespace InstagramCloneWebApp.Entities
         public string ImageDecsription { get; set; }
         public string ImageAuthor { get; set; }
         public string ImageData { get; set; }
+        public string authorname { get; set; }
+        public string authorpic { get; set; }
+        public int likes { get; set; }
         public DateTime ImageDate { get; set; }
         [NotMapped]
         public IFormFile ImageFile { get; set; }

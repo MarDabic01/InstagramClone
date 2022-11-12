@@ -1,0 +1,25 @@
+﻿@page "{my_id}/{profile_id}"
+@model InstagramCloneWebApp.Pages.FollowingPageModel
+@{
+    ViewData["Title"] = "REACH ME - Following";
+}
+
+<link rel="stylesheet" href="~/css/followersPageCSS.css" />
+<div id="mainContainer">
+    <div id="followersContainer">
+        <h1>Followers list</h1>
+        @if (Model.myFollowers.Count > 0)
+        {
+            @foreach (Follower f in @Model.myFollowers)
+            {
+                <div id="profileInfo">
+                    <img src="data:image/jpg;base64,@f.profilePictureData" id="profilepicture" />
+                    <a href="@f.link" id="link"><strong>@f.username</strong></a>
+                </div>
+            }
+        }
+        <form method="post" asp-page-handler="ToProfile">
+            <input type="submit" value="BACK" id="backButton" />
+        </form>
+    </div>
+</div>

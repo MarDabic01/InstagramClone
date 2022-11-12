@@ -19,7 +19,7 @@ namespace InstagramCloneWebApp.Pages
         public string infoMessage = "";
         private readonly EmpDBContext _context;
         public int data2;
-        private string aut = "";
+        private string aut = "", autname = "", autpic = "";
         public string searchingString = "";
         public List<string> links = new List<string>();
 
@@ -54,6 +54,8 @@ namespace InstagramCloneWebApp.Pages
                 _empData.ImageDecsription = _empData.ImageDecsription;
                 _empData.ImageDate = DateTime.Now;
                 _empData.ImageData = Convert.ToBase64String(bytes, 0, bytes.Length);
+                _empData.authorname = autname;
+                _empData.authorpic = autpic;
                 infoMessage = "Image successfully uploaded";
             }
             _context.ImagesDetails.Add(_empData);
@@ -85,6 +87,16 @@ namespace InstagramCloneWebApp.Pages
 
                                 command.ExecuteNonQuery();
                             }
+                            /*sqlQuery = "UPDATE ImagesDetails " +
+                                       "SET authorname = '" + u.username + "', authorpic = '" + u.picdata + "'" +
+                                       "WHERE id = " + u.id + ";";
+                            using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                            {
+                                command.Parameters.AddWithValue("@authorname", u.username);
+                                command.Parameters.AddWithValue("@authorpic", u.picdata);
+
+                                command.ExecuteNonQuery();
+                            }*/
                         }
                     }
                     catch (Exception e)
@@ -101,7 +113,9 @@ namespace InstagramCloneWebApp.Pages
             {
                 if(u.id == (String)RouteData.Values["passed_id"])
                 {
-                    aut = u.username;
+                    aut = u.id;
+                    autname = u.username;
+                    autpic = u.picdata;
                 }
             }
         }
@@ -181,6 +195,7 @@ namespace InstagramCloneWebApp.Pages
                             user.password = reader.GetString(3);
                             user.repeatpassword = reader.GetString(4);
                             user.postsnum = reader.GetInt32(7);
+                            user.picdata = reader.GetString(10);
 
                             allUsers.Add(user);
                         }
@@ -197,5 +212,6 @@ namespace InstagramCloneWebApp.Pages
         public string password;
         public string repeatpassword;
         public int postsnum;
+        public string picdata;
     }
 }

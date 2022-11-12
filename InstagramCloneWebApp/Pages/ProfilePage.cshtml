@@ -60,11 +60,15 @@
                 <span class="textinfo">@Model.currentProfile.posts</span>
             </div>
             <div id="postsfollowerstext">
-                <span class="textinfo">Followers</span>
+                <form method="post" asp-page-handler="ToFollowers">
+                    <input type="submit" value="Followers" class="profileInfoButton"/>
+                </form>
                 <span class="textinfo">@Model.currentProfile.followers</span>
             </div>
             <div id="postsfollowerstext">
-                <span class="textinfo">Following</span>
+                <form method="post" asp-page-handler="ToFollowing">
+                    <input type="submit" value="Following" class="profileInfoButton" />
+                </form>
                 <span class="textinfo">@Model.currentProfile.following</span>
             </div>
         </div>
@@ -85,3 +89,26 @@
         }
     </div>
 </div>
+@if (Model.myposts.Count > 0)
+{
+    @foreach (ProfilePost p in Model.myposts)
+    {
+        <div id="postsContainer">
+            <div id="postBackground">
+                <div id="postInfo">
+                    <img src="data:image/jpg;base64,@p.profilepic" id="profilepic_onpost" />
+                    <div class="info">
+                        <a href="@p.link" id="link"><strong class="infoelement">@p.username</strong></a>
+                        <strong class="infoelement">@p.caption</strong><br />
+                    </div>
+                </div>
+                <div id="postPic">
+                    <img src="data:image/jpg;base64,@p.postdata" id="postpicture" />
+                </div>
+                <div id="like_section">
+                    <span class="like_element">Likes : @p.likes</span>
+                </div>
+            </div>
+        </div>
+    }
+}

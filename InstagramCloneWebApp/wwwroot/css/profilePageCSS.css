@@ -1,13 +1,14 @@
 ﻿body {
-    background-image: url('../Images/profilePageBack.jpg');
-    background-size: cover;
+    background-image: url('../Images/accountPageBack.jpg');
+    background-size: contain;
     font-family:myFont;
 }
 
 #mainContainer {
-    height: 50vh;
+    height: 60vh;
     padding: 0px;
     margin-top: 1vh;
+    margin-bottom:1vh;
     display: flex;
     justify-content: center;
 }
@@ -49,9 +50,80 @@
     justify-content: center;
 }
 
+#postBackground {
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(255,255,255);
+    width: 50vw;
+    height: 80vh;
+}
+
+#postInfo {
+    width: 100%;
+    height: 15%;
+    background-color: rgb(217, 217, 217);
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+}
+
+#postpicture {
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+}
+
+#postPic{
+    width:100%;
+    height:85%;
+    padding:10px;
+}
+
+#postsContainer
+{
+    display:flex;
+    justify-content:center;
+    margin-top:1vh;
+    margin-bottom:10vh;
+}
+
+#profilepic_onpost
+{
+    border-radius:25px;
+}
+
 .textinfo {
     font-size: 20px;
     text-align:center;
+}
+
+.info {
+    border-radius: 20px;
+    margin-left: 2%;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.infoelement {
+    align-self: flex-start;
+    font-family:myFont;
+}
+
+#like_section {
+    width: 100%;
+    height: 7%;
+    background-color: rgb(217, 217, 217);
+    padding: 5px;
+}
+
+.like_element {
+    font-family: myFont;
+    font-size: 15px;
+}
+
+#link{
+
 }
 
 #followbutton {
@@ -67,6 +139,17 @@
         border-color: rgb(26, 26, 26);
     }
 
+#link {
+    margin: 0px;
+    color: rgb(33,37,41);
+}
+
+.profileInfoButton {
+    font-size: 20px;
+    text-align: center;
+    background-color: rgba(255,255,255,0);
+    border: none;
+}
 @font-face {
     font-family: myFont;
     src: url('../Fonts/ubuntu.regular.ttf');
