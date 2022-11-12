@@ -41,5 +41,8 @@
     margin-bottom:1vh;
 }
 #profilepicture{
-    width:10%;
+    border:solid black 1px;
+    border-radius:10px;
+    width:7%;
+    height:100%;
 }

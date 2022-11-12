@@ -1,5 +1,5 @@
 ﻿body {
-    background-image: url('../Images/accountPageBack.jpg');
+    background-image: url('../Images/planksBackground.jpg');
     background-size: contain;
     font-family:myFont;
 }
@@ -89,6 +89,8 @@
 
 #profilepic_onpost
 {
+    width:10%;
+    height:100%;
     border-radius:25px;
 }
 

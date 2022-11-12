@@ -153,7 +153,9 @@ namespace InstagramCloneWebApp.Pages
 
         public void OnPostToHome()
         {
-
+            string redirectString;
+            redirectString = "https://localhost:44328/HomePage/" + RouteData.Values["passed_id"].ToString();
+            Response.Redirect(redirectString);
         }
         public void OnPostToProfile()
         {
@@ -163,7 +165,9 @@ namespace InstagramCloneWebApp.Pages
         }
         public void OnPostToDiscover()
         {
-
+            string redirectString;
+            redirectString = "https://localhost:44328/DiscoverPage/" + RouteData.Values["passed_id"].ToString();
+            Response.Redirect(redirectString);
         }
         public void OnPostToAccount()
         {

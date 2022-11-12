@@ -13,7 +13,7 @@
             @foreach (Follower f in @Model.myFollowers)
             {
                 <div id="profileInfo">
-                    <img src="data:image/jpg;base64,@f.profilePictureData" id="profilepicture"/>
+                    <img src="data:image/jpg;base64,@f.profilePictureData" id="profilepicture" />
                     <a href="@f.link" id="link"><strong>@f.username</strong></a>
                 </div>
             }
