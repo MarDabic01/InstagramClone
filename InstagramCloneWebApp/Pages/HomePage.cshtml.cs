@@ -34,7 +34,6 @@ namespace InstagramCloneWebApp.Pages
             GetFollowingAccounts();
             GetAllPosts();
             GetPostsToShow();
-            info = allposts[0].author;
         }
 
         private void GetFollowingList()
@@ -91,6 +90,7 @@ namespace InstagramCloneWebApp.Pages
                             post.profilepic = reader.GetString(6);
                             post.likes = reader.GetInt32(7);
                             post.link = "https://localhost:44328/ProfilePage/" + RouteData.Values["my_id"].ToString() + "/" + post.author;
+                            post.likedby = reader.GetString(8);
 
                             allposts.Add(post);
                         }
@@ -211,6 +211,103 @@ namespace InstagramCloneWebApp.Pages
                     }
                 }
             }
+        }
+
+        public void OnPostOnLike(string imgId)
+        {
+            GetAllPosts();
+            foreach (ProfilePost p in allposts)
+            {
+                if (p.id == imgId)
+                {
+                    int likes_num = p.likes + 1;
+                    string likedbyString = p.likedby + (String)RouteData.Values["my_id"] + ",";
+                    string connectionString = "Data Source=.\\sqlexpress;Initial Catalog=ReachMeDB;Integrated Security=True";
+                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        connection.Open();
+                        string sqlQuery = "UPDATE ImagesDetails " +
+                                          "SET likes = " + likes_num + ", likedby = '" + likedbyString + "'" +
+                                          "WHERE id = " + p.id + ";";
+                        using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                        {
+                            command.Parameters.AddWithValue("@likes", likes_num);
+                            command.Parameters.AddWithValue("@likedby", likedbyString);
+
+                            command.ExecuteNonQuery();
+                            infoMessage = "successful";
+                        }
+                    }
+                }
+            }
+
+            GetFollowingList();
+            GetFollowingAccounts();
+            GetAllPosts();
+            GetPostsToShow();
+        }
+
+        public void OnPostOnUnlike(string imgId)
+        {
+            GetAllPosts();
+            foreach (ProfilePost p in allposts)
+            {
+                if (p.id == imgId)
+                {
+                    int likes_num = p.likes - 1;
+                    string likedbyString = NewLikedbyString(p.likedby);
+                    string connectionString = "Data Source=.\\sqlexpress;Initial Catalog=ReachMeDB;Integrated Security=True";
+                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        connection.Open();
+                        string sqlQuery = "UPDATE ImagesDetails " +
+                                          "SET likes = " + likes_num + ", likedby = '" + likedbyString + "'" +
+                                          "WHERE id = " + p.id + ";";
+                        using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                        {
+                            command.Parameters.AddWithValue("@likes", likes_num);
+                            command.Parameters.AddWithValue("@likedby", likedbyString);
+
+                            command.ExecuteNonQuery();
+                            infoMessage = "successful";
+                        }
+                    }
+                }
+            }
+
+            GetFollowingList();
+            GetFollowingAccounts();
+            GetAllPosts();
+            GetPostsToShow();
+        }
+
+        private string NewLikedbyString(string s)
+        {
+            string newString = "", workingString = "";
+            for(int i=0;i<s.Length;i++)
+            {
+                if(s[i] == ',')
+                {
+                    if(workingString != (String)RouteData.Values["my_id"])
+                    {
+                        newString += workingString + ",";
+                    }
+                    workingString = "";
+                }
+                else
+                {
+                    workingString += s[i];
+                }
+            }
+            return newString;
+        }
+
+        public bool IsPictureLiked(string s)
+        {
+            if (s.Contains((String)RouteData.Values["my_id"]))
+                return true;
+            else
+                return false;
         }
     }
 }

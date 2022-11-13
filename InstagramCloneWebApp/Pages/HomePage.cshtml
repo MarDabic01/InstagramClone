@@ -4,6 +4,7 @@
     ViewData["Title"] = "REACH ME - Home";
 }
 
+<link rel="stylesheet" href="~/css/homePageCSS.css" />
 <link rel="stylesheet" href="~/css/profilePageCSS.css" />
 <link rel="stylesheet" href="~/css/navigationBarCSS.css" />
 <header>
@@ -64,13 +65,30 @@
                 <div id="postPic">
                     <img src="data:image/jpg;base64,@p.postdata" id="postpicture" />
                 </div>
-                <div id="like_section">
+                <div id="likeSection">
                     <span class="like_element">Likes : @p.likes</span>
+                    @if (Model.IsPictureLiked(p.likedby) == false)
+                    {
+                        <form method="post" asp-page-handler="OnLike">
+                            <input type="submit" id="likeButton" value="LIKE"/>
+                            <input type="hidden" name="imgId" value="@p.id" />
+                        </form>
+                    }
+                    else
+                    {
+                        <form method="post" asp-page-handler="OnUnlike">
+                            <input type="submit" id="likeButton" value="UNLIKE" />
+                            <input type="hidden" name="imgId" value="@p.id" />
+                        </form>
+                    }
                 </div>
             </div>
         </div>
     }
 }
+@if(Model.infoMessage.Length>0)
+            {
                 <div>
-                    <strong>@Model.info</strong>
+                    <strong>@Model.infoMessage</strong>
                 </div>
+            }

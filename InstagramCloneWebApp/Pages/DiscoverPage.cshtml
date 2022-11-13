@@ -48,10 +48,17 @@
         }
     }
 </header>
-@foreach(DiscoverUserInfo u in Model.suggestedAccounts)
-            {
-                <div>
-                    <strong>@u.id</strong>
-                    <strong>@u.username</strong>
-                </div>
-            }
+<div id="discoverMainContainer">
+    <div id="discoverContainer">
+        <div>
+            <h1>Suggested to follow</h1>
+        </div>
+        @foreach (DiscoverUserInfo u in Model.suggestedAccounts)
+        {
+            <div id="suggestedUser">
+                <img src="data:image/jpg;base64,@u.imagedata" id="profilepic"/>
+                <a id="link" href="@u.link">@u.username</a>
+            </div>
+        }
+    </div>
+</div>

@@ -194,6 +194,7 @@ namespace InstagramCloneWebApp.Pages
                             user.username = reader.GetString(2);
                             user.imagedata = reader.GetString(10);
                             user.following = reader.GetString(12);
+                            user.link = "https://localhost:44328/ProfilePage/" + RouteData.Values["my_id"].ToString() + "/" + user.id;
 
                             allUsers.Add(user);
                         }
@@ -208,5 +209,6 @@ namespace InstagramCloneWebApp.Pages
         public string username;
         public string imagedata;
         public string following;
+        public string link;
     }
 }
