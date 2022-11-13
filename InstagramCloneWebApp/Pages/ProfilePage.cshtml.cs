@@ -477,5 +477,7 @@ namespace InstagramCloneWebApp.Pages
         public int likes;
         public string link;
         public string likedby;
+        public string commentsString;
+        public List<Comment> comments = new List<Comment>();
     }
 }

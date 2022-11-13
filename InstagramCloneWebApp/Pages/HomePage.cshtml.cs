@@ -11,7 +11,7 @@ namespace InstagramCloneWebApp.Pages
     public class HomePageModel : PageModel
     {
         public List<ProfileInfo> foundUsers = new List<ProfileInfo>();
-        List<ProfileInfo> allUsers = new List<ProfileInfo>();
+        public List<ProfileInfo> allUsers = new List<ProfileInfo>();
         public ProfileInfo currentProfile = new ProfileInfo();
         public string infoMessage = "";
         public int data2;
@@ -20,20 +20,54 @@ namespace InstagramCloneWebApp.Pages
         public string searchingString = "";
         public List<string> links = new List<string>();
 
-        //Ovo mi treba
-        private List<ProfilePost> allposts = new List<ProfilePost>();
+        //Variables for showing posts
+        public List<ProfilePost> allposts = new List<ProfilePost>();
         public List<ProfilePost> postsToShow = new List<ProfilePost>();
         private string followingList = "";
         private List<string> followingAccounts = new List<string>();
         private List<ProfilePost> allPosts = new List<ProfilePost>();
         public string info = "";
 
+        //Variables for comments
+        private List<string> allCommentStrings = new List<string>();
+        private List<Comment> allComments = new List<Comment>();
+
         public void OnGet()
         {
             GetFollowingList();
             GetFollowingAccounts();
             GetAllPosts();
+            GetAllComments();
             GetPostsToShow();
+        }
+
+        private void GetAllComments()
+        {
+            GetAllPosts();
+            int index = 0;
+            foreach (ProfilePost p in allposts)
+            {
+                string workingString = "";
+                for (int i=0;i<p.commentsString.Length;i++)
+                {
+                    if(p.commentsString[i] == '=')
+                    {
+                        p.comments.Add(new Comment());
+                        p.comments[index].username = workingString;
+                        workingString = "";
+                    }else if(p.commentsString[i] == '-')
+                    {
+                        p.comments[index].body = workingString;
+                        index++;
+                        workingString = "";
+                    }
+                    else
+                    {
+                        workingString += p.commentsString[i];
+                    }
+                }
+                index = 0;
+            }
         }
 
         private void GetFollowingList()
@@ -91,6 +125,7 @@ namespace InstagramCloneWebApp.Pages
                             post.likes = reader.GetInt32(7);
                             post.link = "https://localhost:44328/ProfilePage/" + RouteData.Values["my_id"].ToString() + "/" + post.author;
                             post.likedby = reader.GetString(8);
+                            post.commentsString = reader.GetString(9);
 
                             allposts.Add(post);
                         }
@@ -178,6 +213,41 @@ namespace InstagramCloneWebApp.Pages
             string redirectString;
             redirectString = "https://localhost:44328/UploadPhotoPage/" + RouteData.Values["my_id"].ToString();
             Response.Redirect(redirectString);
+        }
+
+        public void OnPostOnComment(string imgId)
+        {
+            GetAllPosts();
+            GetAllUsers();
+
+            foreach(ProfilePost p in allposts)
+            {
+                if(p.id == imgId)
+                {
+                    string s = p.commentsString;
+                    foreach(ProfileInfo u in allUsers)
+                    {
+                        if(u.id.ToString() == (String)RouteData.Values["my_id"])
+                        {
+                            s += u.username + "=" + Request.Form["comment"] + "-";
+                        }
+                    }
+                    string connectionString = "Data Source=.\\sqlexpress;Initial Catalog=ReachMeDB;Integrated Security=True";
+                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        connection.Open();
+                        string sqlQuery = "UPDATE ImagesDetails " +
+                                          "SET comments = '" + s + "'" +
+                                          "WHERE id = " + p.id + ";";
+                        using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                        {
+                            command.Parameters.AddWithValue("@comments", s);
+
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
         }
 
         private void GetAllUsers()
@@ -309,5 +379,12 @@ namespace InstagramCloneWebApp.Pages
             else
                 return false;
         }
+    }
+
+    public class Comment
+    {
+        public string imageData;
+        public string username;
+        public string body;
     }
 }
