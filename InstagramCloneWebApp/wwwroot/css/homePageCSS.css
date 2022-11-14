@@ -1,4 +1,4 @@
-﻿#likeButton {
+﻿﻿#likeButton {
     padding: 3px;
     width: 100%;
     background-color: rgba(255,255,255,0);
@@ -10,11 +10,12 @@
     border-color: rgb(26, 26, 26);
 }
 
-#likeSection{
-    display:flex;
-    flex-direction:row;
-    justify-content:space-between;
-    padding:3px;
+#likeSection {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 3px;
+    background-color:rgb(255,255,255);
 }
 
 .commentsButton {
@@ -28,6 +29,7 @@
     .commentsButton:hover {
         border-color: rgb(26, 26, 26);
     }
+
 #commentsContainer {
     margin-bottom: 2vh;
     background-color: rgb(255,255,255);
@@ -35,14 +37,16 @@
     flex-direction: column;
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
-    padding:7px;
-    visibility:hidden;
-    position:absolute;
+    padding: 7px;
+    visibility: hidden;
+    position: absolute;
 }
-#commentInfo{
-    display:flex;
-    flex-direction:row;
+
+#commentInfo {
+    display: flex;
+    flex-direction: row;
 }
-.commentElement{
-    font-size:100%;
+
+.commentElement {
+    font-size: 100%;
 }

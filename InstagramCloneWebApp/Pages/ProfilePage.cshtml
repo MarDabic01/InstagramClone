@@ -4,8 +4,10 @@
     ViewData["Title"] = "REACH ME - Profile";
 }
 
+<link rel="stylesheet" href="~/css/homePageCSS.css" />
 <link rel="stylesheet" href="~/css/profilePageCSS.css" />
 <link rel="stylesheet" href="~/css/navigationBarCSS.css" />
+<script src="~/js/ShowCommentsScript.js"></script>
 <header>
     <div id="mainNavContainer">
         <span>ReachMe</span>
@@ -48,67 +50,98 @@
         }
     }
 </header>
-<div id="mainContainer">
-    <div id="profileContainer">
-        <h1>Profile</h1>
-        <img id="profilepic" src="data:image/jpg;base64,@Model.currentProfile.imagedata" />
-        <span id="profileusername">@Model.currentProfile.username</span>
-        <span id="profiledesc">@Model.currentProfile.description</span>
-        <div id="postsfollowers">
-            <div id="postsfollowerstext">
-                <span class="textinfo">Posts</span>
-                <span class="textinfo">@Model.currentProfile.posts</span>
+<body>
+    <div id="mainContainer">
+        <div id="profileContainer">
+            <h1>Profile</h1>
+            <img id="profilepic" src="data:image/jpg;base64,@Model.currentProfile.imagedata" />
+            <span id="profileusername">@Model.currentProfile.username</span>
+            <span id="profiledesc">@Model.currentProfile.description</span>
+            <div id="postsfollowers">
+                <div id="postsfollowerstext">
+                    <span class="textinfo">Posts</span>
+                    <span class="textinfo">@Model.currentProfile.posts</span>
+                </div>
+                <div id="postsfollowerstext">
+                    <form method="post" asp-page-handler="ToFollowers">
+                        <input type="submit" value="Followers" class="profileInfoButton" />
+                    </form>
+                    <span class="textinfo">@Model.currentProfile.followers</span>
+                </div>
+                <div id="postsfollowerstext">
+                    <form method="post" asp-page-handler="ToFollowing">
+                        <input type="submit" value="Following" class="profileInfoButton" />
+                    </form>
+                    <span class="textinfo">@Model.currentProfile.following</span>
+                </div>
             </div>
-            <div id="postsfollowerstext">
-                <form method="post" asp-page-handler="ToFollowers">
-                    <input type="submit" value="Followers" class="profileInfoButton"/>
-                </form>
-                <span class="textinfo">@Model.currentProfile.followers</span>
-            </div>
-            <div id="postsfollowerstext">
-                <form method="post" asp-page-handler="ToFollowing">
-                    <input type="submit" value="Following" class="profileInfoButton" />
-                </form>
-                <span class="textinfo">@Model.currentProfile.following</span>
-            </div>
+            @if (Model.CheckIfProfileIsMine() == false)
+            {
+                @if (Model.CheckIfFollowingUser() == false)
+                {
+                    <form method="post">
+                        <input type="submit" value="Follow" id="followbutton" asp-page-handler="Follow" />
+                    </form>
+                }
+                else
+                {
+                    <form method="post">
+                        <input type="submit" value="Unfollow" id="followbutton" asp-page-handler="Unfollow" />
+                    </form>
+                }
+            }
         </div>
-        @if (Model.CheckIfProfileIsMine() == false)
-        {
-            @if (Model.CheckIfFollowingUser() == false)
-            {
-                <form method="post">
-                    <input type="submit" value="Follow" id="followbutton" asp-page-handler="Follow" />
-                </form>
-            }
-            else
-            {
-                <form method="post">
-                    <input type="submit" value="Unfollow" id="followbutton" asp-page-handler="Unfollow" />
-                </form>
-            }
-        }
     </div>
-</div>
-@if (Model.myposts.Count > 0)
-{
-    @foreach (ProfilePost p in Model.myposts)
+    @if (Model.myposts.Count > 0)
     {
-        <div id="postsContainer">
-            <div id="postBackground">
-                <div id="postInfo">
-                    <img src="data:image/jpg;base64,@p.profilepic" id="profilepic_onpost" />
-                    <div class="info">
-                        <a href="@p.link" id="link"><strong class="infoelement">@p.username</strong></a>
-                        <strong class="infoelement">@p.caption</strong><br />
+        @foreach (ProfilePost p in Model.myposts)
+        {
+            <div id="postsContainer">
+                <div id="postBackground">
+                    <div id="postInfo">
+                        <img src="data:image/jpg;base64,@p.profilepic" id="profilepic_onpost" />
+                        <div class="info">
+                            <a href="@p.link" id="link"><strong class="infoelement">@p.username</strong></a>
+                            <strong class="infoelement">@p.caption</strong><br />
+                        </div>
+                    </div>
+                    <div id="postPic">
+                        <img src="data:image/jpg;base64,@p.postdata" id="postpicture" />
+                    </div>
+                    <div id="likeSection">
+                        <span class="like_element">Likes : @p.likes</span>
+                        <button class="commentsButton" onclick="ShowCommentSection(@p.id)">See all comments</button>
+                        @if (Model.IsPictureLiked(p.likedby) == false)
+                        {
+                            <form method="post" asp-page-handler="OnLike">
+                                <input type="submit" id="likeButton" value="LIKE" />
+                                <input type="hidden" name="imgId" value="@p.id" />
+                            </form>
+                        }
+                        else
+                        {
+                            <form method="post" asp-page-handler="OnUnlike">
+                                <input type="submit" id="likeButton" value="UNLIKE" />
+                                <input type="hidden" name="imgId" value="@p.id" />
+                            </form>
+                        }
                     </div>
                 </div>
-                <div id="postPic">
-                    <img src="data:image/jpg;base64,@p.postdata" id="postpicture" />
-                </div>
-                <div id="like_section">
-                    <span class="like_element">Likes : @p.likes</span>
+                <div id="commentsContainer" name="@p.id">
+                    @foreach (Comment c in p.comments)
+                    {
+                        <div id="commentInfo">
+                            <span class="commentElement">@c.username</span>
+                            <span class="commentElement">@c.body</span>
+                        </div>
+                    }
+                    <form method="post" asp-page-handler="OnComment">
+                        <input type="text" name="comment" placeholder="Write your comment" />
+                        <input type="hidden" name="imgId" value="@p.id" />
+                        <input type="submit" value="COMMENT" />
+                    </form>
                 </div>
             </div>
-        </div>
+        }
     }
-}
+</body>

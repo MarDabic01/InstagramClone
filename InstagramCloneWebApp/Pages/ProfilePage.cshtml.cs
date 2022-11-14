@@ -29,6 +29,7 @@ namespace InstagramCloneWebApp.Pages
         {
             GetAllUsers();
             GetMyPosts();
+            GetAllComments();
             ShowMyPosts();
             
             foreach(ProfileInfo pi in allUsers)
@@ -433,6 +434,7 @@ namespace InstagramCloneWebApp.Pages
                             post.profilepic = reader.GetString(6);
                             post.likes = reader.GetInt32(7);
                             post.link = "https://localhost:44328/ProfilePage/" + RouteData.Values["my_id"].ToString() + "/" + RouteData.Values["profile_id"].ToString();
+                            post.likedby = reader.GetString(8);
 
                             allposts.Add(post);
                         }
@@ -450,6 +452,208 @@ namespace InstagramCloneWebApp.Pages
                     myposts.Add(p);
                 }
             }
+        }
+        public bool IsPictureLiked(string s)
+        {
+            if (s.Contains((String)RouteData.Values["my_id"]))
+                return true;
+            else
+                return false;
+        }
+
+        public void OnPostOnLike(string imgId)
+        {
+            GetMyPosts();
+            UpdateProfileData(RouteData.Values["profile_id"].ToString());
+            foreach (ProfilePost p in allposts)
+            {
+                if (p.id == imgId)
+                {
+                    int likes_num = p.likes + 1;
+                    string likedbyString = p.likedby + (String)RouteData.Values["my_id"] + ",";
+                    string connectionString = "Data Source=.\\sqlexpress;Initial Catalog=ReachMeDB;Integrated Security=True";
+                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        connection.Open();
+                        string sqlQuery = "UPDATE ImagesDetails " +
+                                          "SET likes = " + likes_num + ", likedby = '" + likedbyString + "'" +
+                                          "WHERE id = " + p.id + ";";
+                        using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                        {
+                            command.Parameters.AddWithValue("@likes", likes_num);
+                            command.Parameters.AddWithValue("@likedby", likedbyString);
+
+                            command.ExecuteNonQuery();
+                            infoMessage = "successful";
+                        }
+                    }
+                }
+            }
+
+            allposts.Clear();
+            myposts.Clear();
+            GetMyPosts();
+            ShowMyPosts();
+            UpdateProfileData(RouteData.Values["profile_id"].ToString());
+        }
+
+        public void OnPostOnUnlike(string imgId)
+        {
+            GetAllPosts();
+            foreach (ProfilePost p in allposts)
+            {
+                if (p.id == imgId)
+                {
+                    int likes_num = p.likes - 1;
+                    string likedbyString = NewLikedbyString(p.likedby);
+                    string connectionString = "Data Source=.\\sqlexpress;Initial Catalog=ReachMeDB;Integrated Security=True";
+                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        connection.Open();
+                        string sqlQuery = "UPDATE ImagesDetails " +
+                                          "SET likes = " + likes_num + ", likedby = '" + likedbyString + "'" +
+                                          "WHERE id = " + p.id + ";";
+                        using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                        {
+                            command.Parameters.AddWithValue("@likes", likes_num);
+                            command.Parameters.AddWithValue("@likedby", likedbyString);
+
+                            command.ExecuteNonQuery();
+                            infoMessage = "successful";
+                        }
+                    }
+                }
+            }
+            allposts.Clear();
+            myposts.Clear();
+            GetMyPosts();
+            ShowMyPosts();
+            UpdateProfileData(RouteData.Values["profile_id"].ToString());
+        }
+
+        private void GetAllPosts()
+        {
+            allposts.Clear();
+
+            string connectionString = "Data Source=.\\sqlexpress;Initial Catalog=ReachMeDB;Integrated Security=True";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                string sqlQuery = "SELECT * FROM ImagesDetails";
+                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                {
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            ProfilePost post = new ProfilePost();
+                            post.id = reader.GetInt32(0).ToString();
+                            post.caption = reader.GetString(1);
+                            post.author = reader.GetString(2);
+                            post.postdata = reader.GetString(4);
+                            post.username = reader.GetString(5);
+                            post.profilepic = reader.GetString(6);
+                            post.likes = reader.GetInt32(7);
+                            post.link = "https://localhost:44328/ProfilePage/" + RouteData.Values["my_id"].ToString() + "/" + post.author;
+                            post.likedby = reader.GetString(8);
+                            post.commentsString = reader.GetString(9);
+
+                            allposts.Add(post);
+                        }
+                    }
+                }
+            }
+        }
+        private string NewLikedbyString(string s)
+        {
+            string newString = "", workingString = "";
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (s[i] == ',')
+                {
+                    if (workingString != (String)RouteData.Values["my_id"])
+                    {
+                        newString += workingString + ",";
+                    }
+                    workingString = "";
+                }
+                else
+                {
+                    workingString += s[i];
+                }
+            }
+            return newString;
+        }
+
+        private void GetAllComments()
+        {
+            GetAllPosts();
+            int index = 0;
+            foreach (ProfilePost p in allposts)
+            {
+                string workingString = "";
+                for (int i = 0; i < p.commentsString.Length; i++)
+                {
+                    if (p.commentsString[i] == '=')
+                    {
+                        p.comments.Add(new Comment());
+                        p.comments[index].username = workingString;
+                        workingString = "";
+                    }
+                    else if (p.commentsString[i] == '-')
+                    {
+                        p.comments[index].body = workingString;
+                        index++;
+                        workingString = "";
+                    }
+                    else
+                    {
+                        workingString += p.commentsString[i];
+                    }
+                }
+                index = 0;
+            }
+        }
+        public void OnPostOnComment(string imgId)
+        {
+            GetAllPosts();
+            GetAllUsers();
+
+            foreach (ProfilePost p in allposts)
+            {
+                if (p.id == imgId)
+                {
+                    string s = p.commentsString;
+                    foreach (ProfileInfo u in allUsers)
+                    {
+                        if (u.id.ToString() == (String)RouteData.Values["my_id"])
+                        {
+                            s += u.username + "=" + Request.Form["comment"] + "-";
+                        }
+                    }
+                    string connectionString = "Data Source=.\\sqlexpress;Initial Catalog=ReachMeDB;Integrated Security=True";
+                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        connection.Open();
+                        string sqlQuery = "UPDATE ImagesDetails " +
+                                          "SET comments = '" + s + "'" +
+                                          "WHERE id = " + p.id + ";";
+                        using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                        {
+                            command.Parameters.AddWithValue("@comments", s);
+
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+
+            allposts.Clear();
+            myposts.Clear();
+            GetMyPosts();
+            GetAllComments();
+            ShowMyPosts();
+            UpdateProfileData(RouteData.Values["profile_id"].ToString());
         }
     }
 

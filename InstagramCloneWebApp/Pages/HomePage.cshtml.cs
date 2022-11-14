@@ -48,14 +48,15 @@ namespace InstagramCloneWebApp.Pages
             foreach (ProfilePost p in allposts)
             {
                 string workingString = "";
-                for (int i=0;i<p.commentsString.Length;i++)
+                for (int i = 0; i < p.commentsString.Length; i++)
                 {
-                    if(p.commentsString[i] == '=')
+                    if (p.commentsString[i] == '=')
                     {
                         p.comments.Add(new Comment());
                         p.comments[index].username = workingString;
                         workingString = "";
-                    }else if(p.commentsString[i] == '-')
+                    }
+                    else if (p.commentsString[i] == '-')
                     {
                         p.comments[index].body = workingString;
                         index++;
@@ -74,7 +75,7 @@ namespace InstagramCloneWebApp.Pages
         {
             GetAllUsers();
 
-            foreach(ProfileInfo p in allUsers)
+            foreach (ProfileInfo p in allUsers)
             {
                 if (p.id.ToString() == (String)RouteData.Values["my_id"])
                 {
@@ -86,9 +87,9 @@ namespace InstagramCloneWebApp.Pages
         private void GetFollowingAccounts()
         {
             string s = "";
-            for(int i=0;i<followingList.Length;i++)
+            for (int i = 0; i < followingList.Length; i++)
             {
-                if(followingList[i] == ',')
+                if (followingList[i] == ',')
                 {
                     followingAccounts.Add(s);
                     s = "";
@@ -136,11 +137,11 @@ namespace InstagramCloneWebApp.Pages
 
         private void GetPostsToShow()
         {
-            for(int i=allposts.Count-1;i>=0;i--)
+            for (int i = allposts.Count - 1; i >= 0; i--)
             {
-                foreach(string s in followingAccounts)
+                foreach (string s in followingAccounts)
                 {
-                    if(allposts[i].author == s)
+                    if (allposts[i].author == s)
                     {
                         postsToShow.Add(allposts[i]);
                     }
@@ -220,14 +221,14 @@ namespace InstagramCloneWebApp.Pages
             GetAllPosts();
             GetAllUsers();
 
-            foreach(ProfilePost p in allposts)
+            foreach (ProfilePost p in allposts)
             {
-                if(p.id == imgId)
+                if (p.id == imgId)
                 {
                     string s = p.commentsString;
-                    foreach(ProfileInfo u in allUsers)
+                    foreach (ProfileInfo u in allUsers)
                     {
-                        if(u.id.ToString() == (String)RouteData.Values["my_id"])
+                        if (u.id.ToString() == (String)RouteData.Values["my_id"])
                         {
                             s += u.username + "=" + Request.Form["comment"] + "-";
                         }
@@ -354,11 +355,11 @@ namespace InstagramCloneWebApp.Pages
         private string NewLikedbyString(string s)
         {
             string newString = "", workingString = "";
-            for(int i=0;i<s.Length;i++)
+            for (int i = 0; i < s.Length; i++)
             {
-                if(s[i] == ',')
+                if (s[i] == ',')
                 {
-                    if(workingString != (String)RouteData.Values["my_id"])
+                    if (workingString != (String)RouteData.Values["my_id"])
                     {
                         newString += workingString + ",";
                     }
