@@ -10,10 +10,9 @@ namespace InstagramCloneWebApp.Pages
 {
     public class DiscoverPageModel : PageModel
     {
+        //Variables for storing searched data
         public List<DiscoverUserInfo> foundUsers = new List<DiscoverUserInfo>();
         public List<DiscoverUserInfo> allUsers = new List<DiscoverUserInfo>();
-        public int data2;
-        public string infoMessage = "";
         public string searchingString = "";
         public List<string> links = new List<string>();
 
@@ -25,20 +24,22 @@ namespace InstagramCloneWebApp.Pages
 
         public List<DiscoverUserInfo> suggestedAccounts = new List<DiscoverUserInfo>();
 
+        //Automatically called when page loads
         public void OnGet()
         {
-            //My following list
+            //Getting the list of users I follow
             GetMyFollowingString();
             GetMyFollowingAccounts();
 
-            //My following accounts following list
+            //Getting the list of users my following accounts follow
             GetFriendsFollowingString();
             GetFriendsFollowingAccounts();
 
+            //Calculating suggestions
             GetSuggestion();
-            infoMessage = myFollowingString;
         }
 
+        //Getting "followingString" from database, which includes all the ids of people I follow
         private void GetMyFollowingString()
         {
             GetAllUsers();
@@ -52,6 +53,7 @@ namespace InstagramCloneWebApp.Pages
             }
         }
 
+        //Separating "followingString" to get a list of ids
         private void GetMyFollowingAccounts()
         {
             string s = "";
@@ -73,6 +75,7 @@ namespace InstagramCloneWebApp.Pages
             }
         }
 
+        //Getting my friends "followingString" from database
         private void GetFriendsFollowingString()
         {
             foreach(DiscoverUserInfo d in allUsers)
@@ -84,6 +87,7 @@ namespace InstagramCloneWebApp.Pages
             }
         }
 
+        //Separating friends following string and storing into the list
         private void GetFriendsFollowingAccounts()
         {
             string s = "";
@@ -105,6 +109,8 @@ namespace InstagramCloneWebApp.Pages
             }
         }
 
+        //Checking if my friends follow someone that I don't follow
+        //If yes then that profile is suggested 
         private void GetSuggestion()
         {
             foreach(DiscoverUserInfo s in myFollowingAccounts)
@@ -118,10 +124,10 @@ namespace InstagramCloneWebApp.Pages
                 }
             }
         }
-
+        //Called when user is searching for other accounts
         public void OnPostSearch()
         {
-            searchingString = Request.Form["searchbar"];
+            searchingString = Request.Form["searchbar"];//Getting string value from the searchbar
             if (searchingString.Length > 0)
             {
                 GetAllUsers();
@@ -132,52 +138,54 @@ namespace InstagramCloneWebApp.Pages
                         string linkString = "https://localhost:44328/ProfilePage/" + RouteData.Values["my_id"] + "/" + u.id;
 
                         links.Add(linkString);
-                        foundUsers.Add(u);
+                        foundUsers.Add(u);//Adding found user to foundUsers list
                     }
                 }
             }
         }
-
+        //Redirecting to home page
         public void OnPostToHome()
         {
             string redirectString;
             redirectString = "https://localhost:44328/HomePage/" + RouteData.Values["my_id"].ToString();
             Response.Redirect(redirectString);
         }
+        //Redirecting to profile page
         public void OnPostToProfile()
         {
             string redirectString;
             redirectString = "https://localhost:44328/ProfilePage/" + RouteData.Values["my_id"].ToString() + "/" + RouteData.Values["my_id"].ToString();
             Response.Redirect(redirectString);
         }
+        //Redirecting to discover page
         public void OnPostToDiscover()
         {
             string redirectString;
             redirectString = "https://localhost:44328/DiscoverPage/" + RouteData.Values["my_id"].ToString();
             Response.Redirect(redirectString);
         }
+        //Redirecting to account page
         public void OnPostToAccount()
         {
             string redirectString;
             redirectString = "https://localhost:44328/AccountPage/" + RouteData.Values["my_id"].ToString();
             Response.Redirect(redirectString);
         }
+        //Redirecting to upload picture page
         public void OnpostPicture()
         {
             string redirectString;
             redirectString = "https://localhost:44328/UploadPhotoPage/" + RouteData.Values["my_id"].ToString();
             Response.Redirect(redirectString);
         }
+        //Logging user out
         public void OnPostLogOut()
         {
             Response.Redirect("https://localhost:44328/");
         }
-
+        //Getting all the users from users table
         private void GetAllUsers()
         {
-            string data = RouteData.Values["my_id"].ToString();
-            data2 = int.Parse(data);
-
             string connectionString = "Data Source=.\\sqlexpress;Initial Catalog=ReachMeDB;Integrated Security=True";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {

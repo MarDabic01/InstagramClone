@@ -14,14 +14,17 @@ namespace InstagramCloneWebApp.Pages
 {
     public class UploadPhotoPageModel : PageModel
     {
+        //Variables for storing searcing results
         public List<UserInfo> foundUsers = new List<UserInfo>();
         List<UserInfo> allUsers = new List<UserInfo>();
+        public List<string> links = new List<string>();//Storing links for all found users
+        public string searchingString = "";
+
+        //Variables for uploading picture
         public string infoMessage = "";
         private readonly EmpDBContext _context;
         public int data2;
         private string aut = "", autname = "", autpic = "";
-        public string searchingString = "";
-        public List<string> links = new List<string>();
 
         [BindProperty]
         public ImageEntity _empData { get; set; }
@@ -36,8 +39,10 @@ namespace InstagramCloneWebApp.Pages
             return Page();
         }
 
+        //Method called when user is uploading photo
         public void OnPost()
         {
+            //Storing image into byte array 
             byte[] bytes = null;
             if(_empData.ImageFile != null)
             {
@@ -49,11 +54,11 @@ namespace InstagramCloneWebApp.Pages
                     }
                 }
                 GetAllUsers();
-                FinAuthor();
+                FinAuthor();//Finding picture author's id
                 _empData.ImageAuthor = aut;
                 _empData.ImageDecsription = _empData.ImageDecsription;
                 _empData.ImageDate = DateTime.Now;
-                _empData.ImageData = Convert.ToBase64String(bytes, 0, bytes.Length);
+                _empData.ImageData = Convert.ToBase64String(bytes, 0, bytes.Length);//Converting byte array to string and storing it to database
                 _empData.authorname = autname;
                 _empData.authorpic = autpic;
                 infoMessage = "Image successfully uploaded";
@@ -61,17 +66,16 @@ namespace InstagramCloneWebApp.Pages
             _context.ImagesDetails.Add(_empData);
             _context.SaveChanges();
             IncrementPostsValue();
-            
-            //return Redirect("https://localhost:44328/UploadPhotoPage/" + RouteData.Values["passed_id"]);
         }
 
+        //Incrementing posts value of the user, which will be displayed on user profile
         private void IncrementPostsValue()
         {
             foreach(UserInfo u in allUsers)
             {
                 if(u.id == (String)RouteData.Values["passed_id"])
                 {
-                    int new_posts_num = u.postsnum + 1;
+                    int new_posts_num = u.postsnum + 1;//Adding 1 to current posts value
                     try
                     {
                         string connectionString = "Data Source=.\\sqlexpress;Initial Catalog=ReachMeDB;Integrated Security=True";
@@ -87,16 +91,6 @@ namespace InstagramCloneWebApp.Pages
 
                                 command.ExecuteNonQuery();
                             }
-                            /*sqlQuery = "UPDATE ImagesDetails " +
-                                       "SET authorname = '" + u.username + "', authorpic = '" + u.picdata + "'" +
-                                       "WHERE id = " + u.id + ";";
-                            using (SqlCommand command = new SqlCommand(sqlQuery, connection))
-                            {
-                                command.Parameters.AddWithValue("@authorname", u.username);
-                                command.Parameters.AddWithValue("@authorpic", u.picdata);
-
-                                command.ExecuteNonQuery();
-                            }*/
                         }
                     }
                     catch (Exception e)
@@ -107,6 +101,7 @@ namespace InstagramCloneWebApp.Pages
             }
         }
 
+        //Method for finding image author id
         private void FinAuthor()
         {
             foreach(UserInfo u in allUsers)
@@ -120,11 +115,13 @@ namespace InstagramCloneWebApp.Pages
             }
         }
 
+        //Logging out the user and redirecting to main page
         public void OnPostLogOut()
         {
             Response.Redirect("https://localhost:44328/");
         }
 
+        //Taking user to the upload photo page 
         public void OnpostPicture()
         {
             string redirectString;
@@ -132,9 +129,10 @@ namespace InstagramCloneWebApp.Pages
             Response.Redirect(redirectString);
         }
 
+        //Called when user is searching for other accounts
         public void OnPostSearch()
         {
-            searchingString = Request.Form["searchbar"];
+            searchingString = Request.Form["searchbar"];//Getting string value from the searchbar
             if (searchingString.Length > 0)
             {
                 GetAllUsers();
@@ -145,37 +143,41 @@ namespace InstagramCloneWebApp.Pages
                         string linkString = "https://localhost:44328/ProfilePage/" + RouteData.Values["passed_id"] + "/" + u.id;
 
                         links.Add(linkString);
-                        foundUsers.Add(u);
+                        foundUsers.Add(u);//Adding found user to foundUsers list
                     }
                 }
             }
         }
 
+        //Redirecting user to home page
         public void OnPostToHome()
         {
             string redirectString;
             redirectString = "https://localhost:44328/HomePage/" + RouteData.Values["passed_id"].ToString();
             Response.Redirect(redirectString);
         }
+        //Redirecting user to profile page
         public void OnPostToProfile()
         {
             string redirectString;
             redirectString = "https://localhost:44328/ProfilePage/" + RouteData.Values["passed_id"].ToString() + "/" + RouteData.Values["passed_id"].ToString();
             Response.Redirect(redirectString);
         }
+        //Redirecting user to discover page
         public void OnPostToDiscover()
         {
             string redirectString;
             redirectString = "https://localhost:44328/DiscoverPage/" + RouteData.Values["passed_id"].ToString();
             Response.Redirect(redirectString);
         }
+        //Redirecting user to account page
         public void OnPostToAccount()
         {
             string redirectString;
             redirectString = "https://localhost:44328/AccountPage/" + RouteData.Values["passed_id"].ToString();
             Response.Redirect(redirectString);
         }
-
+        //Getting all the users from table 
         private void GetAllUsers()
         {
             string data = RouteData.Values["passed_id"].ToString();

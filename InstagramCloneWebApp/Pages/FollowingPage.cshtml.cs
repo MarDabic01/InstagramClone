@@ -14,13 +14,11 @@ namespace InstagramCloneWebApp.Pages
         List<string> myFollowersIds = new List<string>();
         public List<Follower> myFollowers = new List<Follower>();
         private string followersString = "";
-        public string infoMessage = "";
         public void OnGet()
         {
             GetAllFollowers();
             GetFollowersString();
             GetMyFollowes();
-            infoMessage = followersString;
         }
         public void OnPostToProfile()
         {

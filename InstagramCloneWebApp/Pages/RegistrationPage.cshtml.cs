@@ -18,7 +18,7 @@ namespace InstagramCloneWebApp.Pages
         public string errorMessage = "";
         public string successMessage = "";
 
-        //Method running on GET call
+        //Method getting all the users from users table
         public void OnGet()
         {
             try
@@ -53,7 +53,9 @@ namespace InstagramCloneWebApp.Pages
             }
         }
 
-        //Method running on POST call
+        //Method for making new account
+        //Getting user input and checking if all the requirements are met
+        //If yes then user information is added to users table
         public void OnPost()
         {
             newUser.email = Request.Form["email"];
@@ -92,6 +94,8 @@ namespace InstagramCloneWebApp.Pages
                 errorMessage = e.Message;
             }
 
+
+            //Code for sending verification e-mail to the new user
             MailAddress to = new MailAddress(newUser.email);
             MailAddress from = new MailAddress("markodabic00@gmail.com");
             MailMessage message = new MailMessage(from, to);
@@ -107,7 +111,6 @@ namespace InstagramCloneWebApp.Pages
                 Credentials = new NetworkCredential("reachme915@gmail.com", "hppoftaxadgsxqpi"),
                 EnableSsl = true
             };
-            // code in brackets above needed if authentication required
             client.Send(message);
         }
         
@@ -229,6 +232,7 @@ namespace InstagramCloneWebApp.Pages
             return false;
         }
 
+        //Checks if password is long enough
         private bool PasswordLength()
         {
             if(newUser.password.Length < 8)
@@ -249,6 +253,7 @@ namespace InstagramCloneWebApp.Pages
             public string repeatpassword;
         }
 
+        //Class describing verification e-mail
         public class Email
         {
             public string To { get; set; }

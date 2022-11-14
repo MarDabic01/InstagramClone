@@ -15,8 +15,6 @@ namespace InstagramCloneWebApp.Pages
         public ProfileInfo currentProfile = new ProfileInfo();
         public string infoMessage = "";
         public int data2;
-        public bool isMyProfile = false;
-        public bool isAreadyFollowing = false;
         public string searchingString = "";
         public List<string> links = new List<string>();
 
@@ -31,7 +29,8 @@ namespace InstagramCloneWebApp.Pages
         //Variables for comments
         private List<string> allCommentStrings = new List<string>();
         private List<Comment> allComments = new List<Comment>();
-
+        
+        //Called onload and filling up the home page with friends posts
         public void OnGet()
         {
             GetFollowingList();
@@ -40,7 +39,7 @@ namespace InstagramCloneWebApp.Pages
             GetAllComments();
             GetPostsToShow();
         }
-
+        //Getting all the comments in string form and then separating them
         private void GetAllComments()
         {
             GetAllPosts();
@@ -70,7 +69,7 @@ namespace InstagramCloneWebApp.Pages
                 index = 0;
             }
         }
-
+        //Getting the string that includes info about who am I following
         private void GetFollowingList()
         {
             GetAllUsers();
@@ -83,7 +82,7 @@ namespace InstagramCloneWebApp.Pages
                 }
             }
         }
-
+        //Separating following string and storing followers ids into list
         private void GetFollowingAccounts()
         {
             string s = "";
@@ -100,7 +99,7 @@ namespace InstagramCloneWebApp.Pages
                 }
             }
         }
-
+        //Getting all posts
         private void GetAllPosts()
         {
             allposts.Clear();
@@ -134,7 +133,8 @@ namespace InstagramCloneWebApp.Pages
                 }
             }
         }
-
+        //Posts that need to be shown
+        //All posts from people that I follow
         private void GetPostsToShow()
         {
             for (int i = allposts.Count - 1; i >= 0; i--)
@@ -148,7 +148,7 @@ namespace InstagramCloneWebApp.Pages
                 }
             }
         }
-
+        //Method called when searching for user
         public void OnPostSearch()
         {
             searchingString = Request.Form["searchbar"];
@@ -166,8 +166,8 @@ namespace InstagramCloneWebApp.Pages
                     }
                 }
             }
+            RefreshPage();
         }
-
         public void OnPostToHome()
         {
             string redirectString;
@@ -208,14 +208,13 @@ namespace InstagramCloneWebApp.Pages
         {
             Response.Redirect("https://localhost:44328/");
         }
-
         public void OnpostPicture()
         {
             string redirectString;
             redirectString = "https://localhost:44328/UploadPhotoPage/" + RouteData.Values["my_id"].ToString();
             Response.Redirect(redirectString);
         }
-
+        //Posting a comment to the post
         public void OnPostOnComment(string imgId)
         {
             GetAllPosts();
@@ -249,8 +248,18 @@ namespace InstagramCloneWebApp.Pages
                     }
                 }
             }
+            RefreshPage();
         }
-
+        //Reseting all posts and comments after commentgin
+        private void RefreshPage()
+        {
+            GetFollowingList();
+            GetFollowingAccounts();
+            GetAllPosts();
+            GetAllComments();
+            GetPostsToShow();
+        }
+        //Get all users
         private void GetAllUsers()
         {
             allUsers.Clear();
@@ -283,7 +292,7 @@ namespace InstagramCloneWebApp.Pages
                 }
             }
         }
-
+        //Liking the post 
         public void OnPostOnLike(string imgId)
         {
             GetAllPosts();
@@ -311,13 +320,9 @@ namespace InstagramCloneWebApp.Pages
                     }
                 }
             }
-
-            GetFollowingList();
-            GetFollowingAccounts();
-            GetAllPosts();
-            GetPostsToShow();
+            RefreshPage();
         }
-
+        //Disliking the post
         public void OnPostOnUnlike(string imgId)
         {
             GetAllPosts();
@@ -345,13 +350,10 @@ namespace InstagramCloneWebApp.Pages
                     }
                 }
             }
-
-            GetFollowingList();
-            GetFollowingAccounts();
-            GetAllPosts();
-            GetPostsToShow();
+            RefreshPage();
         }
-
+        //Making new likedby string
+        //Likedby string is a string that contains all the users ids who already liked the post
         private string NewLikedbyString(string s)
         {
             string newString = "", workingString = "";
@@ -372,7 +374,7 @@ namespace InstagramCloneWebApp.Pages
             }
             return newString;
         }
-
+        //Checking if picture is already liked
         public bool IsPictureLiked(string s)
         {
             if (s.Contains((String)RouteData.Values["my_id"]))

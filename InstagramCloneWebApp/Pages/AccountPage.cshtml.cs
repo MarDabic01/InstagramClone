@@ -26,6 +26,7 @@ namespace InstagramCloneWebApp.Pages
         [BindProperty]
         public IFormFile formFile { get; set; }
 
+        //Method called when user wants to change e-mail
         public void OnPostChangeEmail()
         {
             GetAllUsers();
@@ -44,11 +45,13 @@ namespace InstagramCloneWebApp.Pages
             }
         }
 
+        //Method called when user is changing username
         public void OnPostChangeUsername()
         {
             GetAllUsers();
             currentUser.username = Request.Form["username"];
 
+            //Checking if username is valid
             if(currentUser.username.Contains(" ") == true || currentUser.username == "")
             {
                 infoMessage = "Username cannot contain whitespace";
@@ -61,12 +64,13 @@ namespace InstagramCloneWebApp.Pages
                 MakeChange(sqlQuery, "@username", currentUser.username, "Username successfully changed");
             }
         }
-
+        //Method called when user is changing password
         public void OnPostChangePassword()
         {
             GetAllUsers();
             currentUser.password = Request.Form["password"];
 
+            //If password is valid then apply changes
             if(IsPasswordValid() && PasswordLength())
             {
                 foreach (UserInfo u in allUsers)
@@ -93,7 +97,7 @@ namespace InstagramCloneWebApp.Pages
                 }
             }
         }
-
+        //Adding description method
         public void OnPostAddDescription()
         {
             GetAllUsers();
@@ -121,7 +125,7 @@ namespace InstagramCloneWebApp.Pages
                 }
             }
         }
-
+        //Deleting account
         public void OnPostDeleteAccount()
         {
             GetAllUsers();
@@ -148,19 +152,19 @@ namespace InstagramCloneWebApp.Pages
                 }
             }
         }
-
+        //Logging out
         public void OnPostLogOut()
         {
             Response.Redirect("https://localhost:44328/");
         }
-
+        //Redirecting user to upload picture page
         public void OnpostPicture()
         {
             string redirectString;
             redirectString = "https://localhost:44328/UploadPhotoPage/" + RouteData.Values["passed_id"].ToString();
             Response.Redirect(redirectString);
         }
-
+        //Setting up user profile picture
         public void OnPostProfilePic()
         {
             byte[] bytes = null;
@@ -203,7 +207,7 @@ namespace InstagramCloneWebApp.Pages
                 }
             }
         }
-
+        //Method called when searching
         public void OnPostSearch()
         {
             searchingString = Request.Form["searchbar"];
@@ -222,32 +226,35 @@ namespace InstagramCloneWebApp.Pages
                 }
             }
         }
-
+        //Redirecting user to the home page
         public void OnPostToHome()
         {
             string redirectString;
             redirectString = "https://localhost:44328/HomePage/" + RouteData.Values["passed_id"].ToString();
             Response.Redirect(redirectString);
         }
+        //Redirecting user to profile page
         public void OnPostToProfile()
         {
             string redirectString;
             redirectString = "https://localhost:44328/ProfilePage/" + RouteData.Values["passed_id"].ToString() + "/" + RouteData.Values["passed_id"].ToString();
             Response.Redirect(redirectString);
         }
+        //Redirecting user to discover page
         public void OnPostToDiscover()
         {
             string redirectString;
             redirectString = "https://localhost:44328/DiscoverPage/" + RouteData.Values["passed_id"].ToString();
             Response.Redirect(redirectString);
         }
+        //Redirecting user to account page
         public void OnPostToAccount()
         {
             string redirectString;
             redirectString = "https://localhost:44328/AccountPage/" + RouteData.Values["passed_id"].ToString();
             Response.Redirect(redirectString);
         }
-
+        //Getting all the users
         private void GetAllUsers()
         {
             string data = RouteData.Values["passed_id"].ToString();
@@ -278,7 +285,7 @@ namespace InstagramCloneWebApp.Pages
                 }
             }
         }
-
+        //Method for setting value into databse
         private void MakeChange(string query, string parameter, string value, string info)
         {
             foreach (UserInfo u in allUsers)
@@ -334,7 +341,7 @@ namespace InstagramCloneWebApp.Pages
             }
             return false;
         }
-
+        //Check password length
         private bool PasswordLength()
         {
             if (currentUser.password.Length < 8)

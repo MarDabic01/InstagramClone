@@ -14,6 +14,7 @@ namespace InstagramCloneWebApp.Pages
         UserInfo currentUser = new UserInfo();
         public string data2;
 
+        //Method called automatically when page loads and setting user profile to verified
         public void OnGet()
         {
             string data = (string)RouteData.Values["passedemail"];
@@ -42,7 +43,7 @@ namespace InstagramCloneWebApp.Pages
                 }
             
 
-
+            //Checks which user is getting verified and set verified to true
             foreach(UserInfo u in allUsers)
             {
                 if(u.email == (String)RouteData.Values["passedemail"])

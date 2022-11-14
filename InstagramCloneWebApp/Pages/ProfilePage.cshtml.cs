@@ -25,6 +25,8 @@ namespace InstagramCloneWebApp.Pages
         List<ProfilePost> allposts = new List<ProfilePost>();
         public List<ProfilePost> myposts = new List<ProfilePost>();
 
+        //Calls when page loads
+        //Filling up the profile information and showing user's posts
         public void OnGet()
         {
             GetAllUsers();
@@ -46,7 +48,7 @@ namespace InstagramCloneWebApp.Pages
                 }
             }
         }
-
+        //Searching for specified users
         public void OnPostSearch()
         {
             searchingString = Request.Form["searchbar"];
@@ -64,11 +66,12 @@ namespace InstagramCloneWebApp.Pages
                     }
                 }
             }
+            //Setting profile data again after page finish searching
             UpdateProfileData(RouteData.Values["profile_id"].ToString());
             GetMyPosts();
+            GetAllComments();
             ShowMyPosts();
         }
-
         public void OnPostToHome()
         {
             string redirectString;
@@ -109,18 +112,18 @@ namespace InstagramCloneWebApp.Pages
         {
             Response.Redirect("https://localhost:44328/");
         }
-
         public void OnpostPicture()
         {
             string redirectString;
             redirectString = "https://localhost:44328/UploadPhotoPage/" + RouteData.Values["my_id"].ToString();
             Response.Redirect(redirectString);
         }
-
+        //Method for following user
         public void OnPostFollow()
         {
             GetAllUsers();
 
+            //Getting my user id and user that is being followed id
             string user1="", user2="";
             foreach(ProfileInfo u in allUsers)
             {
@@ -130,9 +133,10 @@ namespace InstagramCloneWebApp.Pages
                     user2 = u.id.ToString();
             }
 
+            //Incrementing following value of my account
+            //Adding followed user id to my following list in database
             foreach(ProfileInfo u in allUsers)
             {
-
                 if (u.id.ToString() == (String)RouteData.Values["my_id"])
                 {
                     int following_num = u.following + 1;
@@ -154,6 +158,8 @@ namespace InstagramCloneWebApp.Pages
                     }
                 }
             }
+            //Incrementing followers value of followed account
+            //Adding my user id to followed user's followed list in database
             foreach (ProfileInfo u in allUsers)
             {
                 if (u.id.ToString() == (String)RouteData.Values["profile_id"])
@@ -177,8 +183,9 @@ namespace InstagramCloneWebApp.Pages
                     }
                 }
             }
-            UpdateProfileData(RouteData.Values["profile_id"].ToString());
+            UpdateProfileData(RouteData.Values["profile_id"].ToString());//Updating following/followers data after method is done
         }
+        //Calling when user is being unfollowed
         public void OnPostUnfollow()
         {
             GetAllUsers();
@@ -186,6 +193,7 @@ namespace InstagramCloneWebApp.Pages
             UpdateFollowingList();
             UpdateProfileData(RouteData.Values["profile_id"].ToString());
         }
+        //Checking if user is already being followed by me
         public bool CheckIfFollowingUser()
         {
             string user = "";
@@ -222,6 +230,7 @@ namespace InstagramCloneWebApp.Pages
             }
             return false;
         }
+        //Removing my account id from unfollowed user followers list
         private void UpdateFollowersList()
         {
             List<string> allfollowers = new List<string>();
@@ -285,6 +294,7 @@ namespace InstagramCloneWebApp.Pages
                 }
             }
         }
+        //Removing unfollowed user id from my following list
         private void UpdateFollowingList()
         {
             List<string> allfollowings = new List<string>();
@@ -348,6 +358,7 @@ namespace InstagramCloneWebApp.Pages
                 }
             }
         }
+        //Updating all the information about the profile
         private void UpdateProfileData(string str)
         {
             GetAllUsers();
@@ -365,7 +376,7 @@ namespace InstagramCloneWebApp.Pages
                 }
             }
         }
-
+        //Getting all users from database
         private void GetAllUsers()
         {
             string data = RouteData.Values["profile_id"].ToString();
@@ -400,7 +411,8 @@ namespace InstagramCloneWebApp.Pages
                 }
             }
         }
-
+        //Checking if profile displaying is mine
+        //If yes, follow/unfollow button should be disabled
         public bool CheckIfProfileIsMine()
         {
             if ((String)RouteData.Values["my_id"] == (String)RouteData.Values["profile_id"])
@@ -409,7 +421,7 @@ namespace InstagramCloneWebApp.Pages
             }
             return false;
         }
-
+        //Getting all the post from table ImagesDetails
         private void GetMyPosts()
         {
             myposts.Clear();
@@ -442,7 +454,7 @@ namespace InstagramCloneWebApp.Pages
                 }
             }
         }
-
+        //Filtering all posts and adding mine to myposts list
         private void ShowMyPosts()
         {
             foreach(ProfilePost p in allposts)
@@ -453,6 +465,7 @@ namespace InstagramCloneWebApp.Pages
                 }
             }
         }
+        //Checking if picture is already liked
         public bool IsPictureLiked(string s)
         {
             if (s.Contains((String)RouteData.Values["my_id"]))
@@ -460,7 +473,7 @@ namespace InstagramCloneWebApp.Pages
             else
                 return false;
         }
-
+        //Method handling liking user post
         public void OnPostOnLike(string imgId)
         {
             GetMyPosts();
@@ -489,14 +502,10 @@ namespace InstagramCloneWebApp.Pages
                     }
                 }
             }
-
-            allposts.Clear();
-            myposts.Clear();
-            GetMyPosts();
-            ShowMyPosts();
-            UpdateProfileData(RouteData.Values["profile_id"].ToString());
+            //Reseting values of the profile and posts after like is done
+            RefreshPage();
         }
-
+        //Handling post unlike
         public void OnPostOnUnlike(string imgId)
         {
             GetAllPosts();
@@ -524,13 +533,10 @@ namespace InstagramCloneWebApp.Pages
                     }
                 }
             }
-            allposts.Clear();
-            myposts.Clear();
-            GetMyPosts();
-            ShowMyPosts();
-            UpdateProfileData(RouteData.Values["profile_id"].ToString());
+            //Reseting values of the profile and posts after unlike is done
+            RefreshPage();
         }
-
+        //Getting all the posts
         private void GetAllPosts()
         {
             allposts.Clear();
@@ -564,6 +570,8 @@ namespace InstagramCloneWebApp.Pages
                 }
             }
         }
+        //Creating new likedy string 
+        //Likedby string is string that contains all user's ids that already liked specified post
         private string NewLikedbyString(string s)
         {
             string newString = "", workingString = "";
@@ -584,7 +592,7 @@ namespace InstagramCloneWebApp.Pages
             }
             return newString;
         }
-
+        //Getting all the post's comments
         private void GetAllComments()
         {
             GetAllPosts();
@@ -614,6 +622,7 @@ namespace InstagramCloneWebApp.Pages
                 index = 0;
             }
         }
+        //Method called when comment button is clicked
         public void OnPostOnComment(string imgId)
         {
             GetAllPosts();
@@ -647,7 +656,12 @@ namespace InstagramCloneWebApp.Pages
                     }
                 }
             }
-
+            //Refreshing page and post info after posting a comment
+            RefreshPage();
+        }
+        //Refreshing the page and setting values again after making changes on page
+        private void RefreshPage()
+        {
             allposts.Clear();
             myposts.Clear();
             GetMyPosts();
@@ -656,7 +670,7 @@ namespace InstagramCloneWebApp.Pages
             UpdateProfileData(RouteData.Values["profile_id"].ToString());
         }
     }
-
+    //Class defines profile information
     public class ProfileInfo
     {
         public int id;
@@ -669,7 +683,7 @@ namespace InstagramCloneWebApp.Pages
         public string followerss;
         public string followings;
     }
-
+    //Class defines all the post information
     public class ProfilePost
     {
         public string id;

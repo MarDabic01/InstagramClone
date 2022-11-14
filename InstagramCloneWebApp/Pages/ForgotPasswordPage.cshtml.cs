@@ -14,10 +14,7 @@ namespace InstagramCloneWebApp.Pages
         public List<UserInfo> allUsers = new List<UserInfo>();
         public UserInfo newUser = new UserInfo();
 
-        public void OnGet()
-        {
-        }
-
+        //Method sending e-mail for recovering password
         public void OnPost()
         {
             newUser.email = Request.Form["email"];
@@ -37,7 +34,6 @@ namespace InstagramCloneWebApp.Pages
                 Credentials = new NetworkCredential("reachme286@gmail.com", "qdivulnnzawbdqei"),
                 EnableSsl = true
             };
-            // code in brackets above needed if authentication required
             client.Send(message);
         }
 

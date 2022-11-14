@@ -15,7 +15,8 @@ namespace InstagramCloneWebApp.Pages
         public string errorMessage = "";
         public int index;
 
-        //Code running on post call
+        //Code running when user try to log into account
+        //Getting user input and checking if those data exist in database and do they match
         public void OnPost()
         {
             existingUser.username = Request.Form["username"];
@@ -54,13 +55,14 @@ namespace InstagramCloneWebApp.Pages
 
             if(IsLoginValid())
             {
-                errorMessage = "Successfully logged in"; //Redirect to profile page
+                //Login is valid and user is redirected to account
+                errorMessage = "Successfully logged in"; 
                 string redirectString = "accountPage/" + existingUser.id + "";
-                //string redirectString = "accountPage/1";
                 Response.Redirect(redirectString);
             }
         }
 
+        //Method for checking if user login information are valid
         private bool IsLoginValid()
         {
             foreach (ExistingUserInfo u in allUsers)
@@ -82,6 +84,7 @@ namespace InstagramCloneWebApp.Pages
             return false;
         }
         
+        //Checking if account is verified
         private bool IsAccountVerified()
         {
             foreach (ExistingUserInfo u in allUsers)
@@ -91,7 +94,7 @@ namespace InstagramCloneWebApp.Pages
             return true;
         }
 
-        //Class used to store user information
+        //Class used to store login user information
         public class ExistingUserInfo
         {
             public int id;
